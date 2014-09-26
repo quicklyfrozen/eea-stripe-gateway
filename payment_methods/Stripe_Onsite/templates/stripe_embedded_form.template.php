@@ -13,7 +13,8 @@
 
 <div id="ee-stripe-billing-form-input-dv" class="ee-billing-qstn-input-dv" style="text-align: center;">
     <script
-        src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+        src="https://checkout.stripe.com/checkout.js"
+		class="stripe-button"
         data-key="<?php echo $data_key; ?>"
         data-amount="<?php echo $grand_total; ?>"
         data-name="<?php echo $data_name; ?>"
