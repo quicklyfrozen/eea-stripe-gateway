@@ -11,14 +11,17 @@
  */
 ?>
 
-<div id="ee-stripe-billing-form-іекшзу-input-dv" class="ee-billing-qstn-input-dv">
-    <h3>Stripe Embedded Form:</h3>
+<div id="ee-stripe-billing-form-input-dv" class="ee-billing-qstn-input-dv" style="text-align: center;">
     <script
         src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-        data-key="pk_test_6pRNASCoBOKtIshFeQd4XMUh"
-        data-amount="2000"
-        data-name="Demo Site"
-        data-description="2 widgets ($20.00)"
-        data-image="/128x128.png">
-    </script>
+        data-key="<?php echo $data_key; ?>"
+        data-amount="<?php echo $grand_total; ?>"
+        data-name="<?php echo $data_name; ?>"
+        data-description="<?php echo $data_description; ?>"
+        data-image="<?php echo $data_image; ?>"
+        data-number="<?php echo $cc_number; // doesn't work  :( ?>"
+        data-exp_month="<?php echo $exp_month; // doesn't work  :(  ?>"
+        data-exp_year="<?php echo $exp_year; // doesn't work  :(  ?>"
+        data-cvc="<?php echo $cvc; // doesn't work  :(  ?>"
+	></script>
 </div>
