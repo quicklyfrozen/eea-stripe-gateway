@@ -24,7 +24,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 	 */
 	public function __construct() {
 		// Include Stripe API dependencies.
-		require_once( EE_STRIPE_PATH . 'includes/Stripe-API.php' );
+		require_once( EE_STRIPE_PATH . 'includes' . DS . 'Stripe-API.php' );
 	}
 
 	public static function register_addon() {
@@ -45,7 +45,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 				),
 				'payment_method_paths' => array(
 					EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite',
-					EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Offsite'
+					//EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Offsite'
 				),
 		));
 	}

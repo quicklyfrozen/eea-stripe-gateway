@@ -20,16 +20,16 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
 	/**
-	 *
-	 * @var $_stripe_secter_key string
+	 * All the currencies supported by this gateway. Add any others you like,
+	 * as contained in the esp_currency table
+	 * @var array
 	 */
-	protected $_secter_key = NULL;
-
-	/**
-	 *
-	 * @var $_stripe_publishable_key string
-	 */
-	protected $_publishable_key = NULL;
+	protected $_currencies_supported = array(
+		'USD',
+		'GBP',
+		'CAD',
+		'AUD'
+	);
 
 	/**
 	 *
