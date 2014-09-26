@@ -17,6 +17,12 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
 
 class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 
+	/**
+	 *
+	 * @param EE_Payment_Method $pm_instance
+	 * @throws \EE_Error
+	 * @return \EE_PMT_Stripe_Onsite
+	 */
 	public function __construct( $pm_instance = NULL ) {
 		// Scripts for generating Stripe token.
 		add_action( 'wp_enqueue_scripts', array($this, 'enqueue_stripe_payment_scripts') );
@@ -24,7 +30,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_pretty_name = __("Stripe Onsite", 'event_espresso');
-		$this->_default_description = __( 'Please provide the following billing information:', 'event_espresso' );
+		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
 		parent::__construct($pm_instance);
 		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 	}
@@ -38,10 +44,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		EE_Registry::instance()->load_helper('Template');
 		$form = new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
-				'stripe_embedded_form' => new EE_Checkbox_Multi_Input( array(
+				'' => new EE_Checkbox_Multi_Input( array(
 					'stripe_embedded_checkout' => sprintf( __( 'Use Stripe Embedded Form %s', 'event_espresso' ), $this->get_help_tab_link() )
 				)),
-				'secter_key' => new EE_Text_Input( array(
+				'secret_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
 				)),
 				'publishable_key' => new EE_Text_Input( array(
@@ -58,20 +64,23 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 */
 	public function generate_new_billing_form() {
 		$form_name = 'Stripe_Onsite_Form';
-		$billing_form = new EE_Billing_Info_Form( $this->_pm_instance, array(
-			'name' => $form_name,
-			'html_id'=> 'ee-Stripe-billing-form',
-			'html_class'=> 'ee-billing-form',
-			'subsections' => array(
-				'credit_card' => new EE_Credit_Card_Input( array('required' => true, 'html_id' => 'ee-stripe-card')),
-				'cvv' => new EE_CVV_Input( array('required' => true, 'html_id' => 'ee-stripe-cvv')),
-				'exp_month' => new EE_Month_Input( true, array('required' => true, 'html_id' => 'ee-stripe-expmonth')),
-				'exp_year' => new EE_Year_Input( true, 1, 15, array('required' => true, 'html_id' => 'ee-stripe-expyear')),
+		$billing_form = new EE_Billing_Info_Form(
+			$this->_pm_instance,
+			array(
+				'name' => $form_name,
+				'html_id'=> 'ee-Stripe-billing-form',
+				'html_class'=> 'ee-billing-form',
+				'subsections' => array(
+					$this->stripe_embedded_form()
+				)
 			)
-		));
+		);
 
 		// Shorten the form.
 		$billing_form->exclude( array(
+				'first_name',
+				'last_name',
+				'email',
 				'address',
 				'address2',
 				'city',
@@ -81,16 +90,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'phone'
 			));
 
-		// Tweak the form (in the template we check for debug mode and whether ot add any content or not).
-		add_filter( 'FHEE__EE_Form_Section_Layout_Base__layout_form__start__for_' . $form_name, array('EE_PMT_Stripe_Onsite', 'generate_billing_form_debug_content'), 10, 2 );
-		if ( $this->_pm_instance->debug_mode() ) {
-			$billing_form->get_input('credit_card')->set_default( '4242424242424242' );
-			$billing_form->get_input('exp_year')->set_default( date('Y') + 4 );
-			$billing_form->get_input('cvv')->set_default( '248' );
-		}
-
-		// Just leave this for an example:
-		add_filter( 'FHEE__EE_Form_Section_Layout_Base__layout_form__end__for_' . $form_name, array('EE_PMT_Stripe_Onsite', 'generate_stripe_embedded_form'), 10, 2 );
+		// Tweak the form (in the template we check for debug mode and whether to add any content or not).
+		add_filter( 'FHEE__EE_Form_Section_Layout_Base__layout_form__start__for_' . $form_name, array( $this, 'generate_billing_form_debug_content'), 10, 2 );
 
 		return $billing_form;
 	}
@@ -102,7 +103,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @param EE_Billing_Info_Form $form_section
 	 * @return string
 	 */
-	public static function generate_billing_form_debug_content( $form_begin_content, $form_section ) {
+	public function generate_billing_form_debug_content( $form_begin_content, $form_section ) {
 		EE_Registry::instance()->load_helper('Template');
 		return EEH_Template::display_template( dirname(__FILE__) . DS . 'templates' . DS . 'stripe_debug_info.template.php', array('form_section' => $form_section), true ) . $form_begin_content;
 	}
@@ -110,13 +111,35 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	/**
 	 *  Use Stripe's Embedded form.
 	 *
-	 * @param string $form_end_content
-	 * @param EE_Billing_Info_Form $form_section
-	 * @return string
+	 * @return EE_Form_Section_Proper
 	 */
-	public static function generate_stripe_embedded_form( $form_end_content, $form_section ) {
-		EE_Registry::instance()->load_helper('Template');
-		return EEH_Template::display_template( dirname(__FILE__) . DS . 'templates' . DS . 'stripe_embedded_form.template.php', array('form_section' => $form_section), true ) . $form_end_content;
+	public function stripe_embedded_form() {
+		$template_args = apply_filters(
+			'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__template_args',
+			array(
+				'data_key' 				=> 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
+				'TXN_grand_total' 	=> 0.00,
+				'data_name' 			=> EE_Registry::instance()->CFG->organization->name,
+				'TXN_description' 	=> '',
+				'data_image' 			=> EE_Registry::instance()->CFG->organization->logo_url
+			)
+		);
+		if ( $this->_pm_instance->debug_mode() ) {
+			$template_args['cc_number'] 	= '4242424242424242';
+			$template_args['exp_month'] 	= date('m');
+			$template_args['exp_year'] 		= date('Y') + 4;
+			$template_args['cvc'] 				= '248';
+		}
+		return new EE_Form_Section_Proper(
+			array(
+				'layout_strategy' => new EE_Template_Layout(
+					array(
+						'layout_template_file' 	=> dirname(__FILE__) . DS . 'templates' . DS . 'stripe_embedded_form.template.php',
+						'template_args'  				=> $template_args
+					)
+				)
+			)
+		);
 	}
 
 	/**
@@ -126,12 +149,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 */
 	public function enqueue_stripe_payment_scripts() {
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', '', '2.0' );
-		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', '', EE_STRIPE_VERSION );
+		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
 	}
 
 	/**
 	 * Adds the help tab
-	 * 
+	 *
 	 * @see EE_PMT_Base::help_tabs_config()
 	 * @return array
 	 */
