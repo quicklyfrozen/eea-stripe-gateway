@@ -36,11 +36,20 @@ if ( $form_section->payment_method()->debug_mode() ) { ?>
                     <tr>
                         <td>4242424242424242</td>
                         <td>248</td>
-                        <td>Any greater than today</td>
+                        <td><?php _e('Any greater than today', 'event_espreso'); ?></td>
                     </tr>
-                    
+
                 </tbody>
             </table>
-        </div><br/>
+        </div>
+		<br/>
+		<h4><?php _e('How do I test specific error codes?', 'event_espreso'); ?></h4>
+		<ul>
+			<li><?php _e('card_declined: Use this special card number', 'event_espreso'); ?> - 4000000000000002</li>
+			<li><?php _e('incorrect_number: Use a number that fails the Luhn check, e.g.', 'event_espreso'); ?> 4242424242424241</li>
+			<li><?php _e('invalid_expiry_month: Use an invalid month e.g.', 'event_espreso'); ?> 13</li>
+			<li><?php _e('invalid_expiry_year: Use a year in the past e.g.', 'event_espreso'); ?> 1970</li>
+			<li><?php _e('invalid_cvc: Use a two digit number e.g.', 'event_espreso'); ?> 99</li>
+		</ul>
     </div>
 <?php }
