@@ -16,14 +16,11 @@ function stripeResponseHandler( status, response ) {
 
 	if ( response.error ) {
 		// Show the errors on the form.
-        SPCO.current_form_to_validate.find('.payment-errors').text(response.error.message);
+        SPCO.current_form_to_validate.find('.payment-errors').text( response.error.message );
         SPCO.current_form_to_validate.find('button').prop('disabled', false);
 	} else {
-		// Token contains id, last4, and card type.
-		var token = response.id;
-		// Insert the token into the form so it gets submitted to the server
-        SPCO.current_form_to_validate.append($('<input type="hidden" name="ee-stripe-token" />').val(token));
-        SPCO.current_form_to_validate.append('<input type="hidden" name="stripe-token" value="' + token + '" />');
+		// set token value in hidden input so it gets submitted to the server
+        $('#ee-stripe-token').val( response.id ) ;
 		// and re-submit.
         SPCO.current_form_to_validate.submit();
 	}
