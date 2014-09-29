@@ -76,7 +76,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
-		$billing_form = new EE_Billing_Info_Form(
+		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
 				'name' => 'stripe_onsite_billing_form',
@@ -88,22 +88,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				)
 			)
 		);
-
-		// Shorten the form.
-		$billing_form->exclude( array(
-				'first_name',
-				'last_name',
-				'email',
-				'address',
-				'address2',
-				'city',
-				'state',
-				'country',
-				'zip',
-				'phone'
-			));
-
-		return $billing_form;
 	}
 
 
