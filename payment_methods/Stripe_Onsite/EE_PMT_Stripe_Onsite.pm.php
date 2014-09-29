@@ -84,7 +84,14 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'html_class'=> 'ee-billing-form',
 				'subsections' => array(
 					$this->generate_billing_form_debug_content(),
-					$this->stripe_embedded_form( $transaction )
+					$this->stripe_embedded_form( $transaction ),
+					new EE_Hidden_Input(
+						array(
+							'html_id' 			=> 'ee-stripe-token',
+							'html_name' 	=> 'ee-stripe-token',
+							'default'			=> ''
+						)
+					)
 				)
 			)
 		);
