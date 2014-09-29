@@ -60,9 +60,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 
 	/**
 	 * Creates a billing form for this payment method type.
-	 *
+	 * @param \EE_Transaction $transaction
+	 * @return \EE_Billing_Info_Form
 	 */
-	public function generate_new_billing_form() {
+	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
 		$form_name = 'Stripe_Onsite_Form';
 		$billing_form = new EE_Billing_Info_Form(
 			$this->_pm_instance,
@@ -71,7 +72,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'html_id'=> 'ee-Stripe-billing-form',
 				'html_class'=> 'ee-billing-form',
 				'subsections' => array(
-					$this->stripe_embedded_form()
+					$this->stripe_embedded_form( $transaction )
 				)
 			)
 		);
@@ -111,14 +112,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	/**
 	 *  Use Stripe's Embedded form.
 	 *
+	 * @param \EE_Transaction $transaction
 	 * @return EE_Form_Section_Proper
 	 */
-	public function stripe_embedded_form() {
+	public function stripe_embedded_form( EE_Transaction $transaction = NULL ) {
 		$template_args = apply_filters(
 			'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__template_args',
 			array(
 				'data_key' 				=> 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-				'TXN_grand_total' 	=> 0.00,
+				'TXN_grand_total' 	=> $transaction->total(),
 				'data_name' 			=> EE_Registry::instance()->CFG->organization->name,
 				'TXN_description' 	=> '',
 				'data_image' 			=> EE_Registry::instance()->CFG->organization->logo_url
