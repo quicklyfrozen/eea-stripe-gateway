@@ -18,22 +18,35 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
 class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 
 	/**
+	 * path to the templates folder for the Stripe PM
+	 * @var string
+	 */
+	protected $_template_path = NULL;
+
+
+
+	/**
 	 *
 	 * @param EE_Payment_Method $pm_instance
 	 * @throws \EE_Error
 	 * @return \EE_PMT_Stripe_Onsite
 	 */
 	public function __construct( $pm_instance = NULL ) {
-		// Scripts for generating Stripe token.
-		add_action( 'wp_enqueue_scripts', array($this, 'enqueue_stripe_payment_scripts') );
 
-		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
-		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_pretty_name = __("Stripe Onsite", 'event_espresso');
 		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
-		parent::__construct($pm_instance);
+		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
+		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
+		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
+
+		parent::__construct( $pm_instance );
+
+		// Scripts for generating Stripe token.
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_stripe_payment_scripts' ));
 	}
+
+
 
 	/**
 	 * Generate a new payment settings form.
@@ -41,8 +54,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return EE_Payment_Method_Form
 	 */
 	public function generate_new_settings_form() {
-		EE_Registry::instance()->load_helper('Template');
-		$form = new EE_Payment_Method_Form( array(
+
+		return new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
 				'' => new EE_Checkbox_Multi_Input( array(
 					'stripe_embedded_checkout' => sprintf( __( 'Use Stripe Embedded Form %s', 'event_espresso' ), $this->get_help_tab_link() )
@@ -55,7 +68,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				))
 			)
 		));
-		return $form;
 	}
 
 	/**
@@ -64,14 +76,14 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
-		$form_name = 'Stripe_Onsite_Form';
 		$billing_form = new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
-				'name' => $form_name,
+				'name' => 'stripe_onsite_billing_form',
 				'html_id'=> 'ee-Stripe-billing-form',
 				'html_class'=> 'ee-billing-form',
 				'subsections' => array(
+					$this->generate_billing_form_debug_content(),
 					$this->stripe_embedded_form( $transaction )
 				)
 			)
@@ -91,23 +103,34 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'phone'
 			));
 
-		// Tweak the form (in the template we check for debug mode and whether to add any content or not).
-		add_filter( 'FHEE__EE_Form_Section_Layout_Base__layout_form__start__for_' . $form_name, array( $this, 'generate_billing_form_debug_content'), 10, 2 );
-
 		return $billing_form;
 	}
+
+
 
 	/**
 	 *  Possibly adds debug content to Stripe billing form.
 	 *
-	 * @param string $form_begin_content
-	 * @param EE_Billing_Info_Form $form_section
 	 * @return string
 	 */
-	public function generate_billing_form_debug_content( $form_begin_content, $form_section ) {
-		EE_Registry::instance()->load_helper('Template');
-		return EEH_Template::display_template( dirname(__FILE__) . DS . 'templates' . DS . 'stripe_debug_info.template.php', array('form_section' => $form_section), true ) . $form_begin_content;
+	public function generate_billing_form_debug_content() {
+		if ( $this->_pm_instance->debug_mode() ) {
+			return new EE_Form_Section_Proper(
+				array(
+					'layout_strategy' => new EE_Template_Layout(
+						array(
+							'layout_template_file' 	=> $this->_template_path . 'stripe_debug_info.template.php',
+							'template_args'  				=> array()
+						)
+					)
+				)
+			);
+		} else {
+			return new EE_Form_Section_HTML();
+		}
 	}
+
+
 
 	/**
 	 *  Use Stripe's Embedded form.
@@ -136,13 +159,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			array(
 				'layout_strategy' => new EE_Template_Layout(
 					array(
-						'layout_template_file' 	=> dirname(__FILE__) . DS . 'templates' . DS . 'stripe_embedded_form.template.php',
+						'layout_template_file' 	=> $this->_template_path . 'stripe_embedded_form.template.php',
 						'template_args'  				=> $template_args
 					)
 				)
 			)
 		);
 	}
+
+
 
 	/**
 	 *  Load all the scripts needed for the Stripe checkout.
@@ -153,6 +178,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', '', '2.0' );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
 	}
+
+
 
 	/**
 	 * Adds the help tab
