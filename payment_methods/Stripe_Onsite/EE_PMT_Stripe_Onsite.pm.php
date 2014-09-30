@@ -56,9 +56,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 
 		return new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
-				'' => new EE_Checkbox_Multi_Input( array(
-					'stripe_embedded_checkout' => sprintf( __( 'Use Stripe Embedded Form %s', 'event_espresso' ), $this->get_help_tab_link() )
-				)),
 				'publishable_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
 				))
