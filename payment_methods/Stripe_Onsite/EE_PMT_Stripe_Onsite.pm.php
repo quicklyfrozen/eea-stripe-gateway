@@ -59,9 +59,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'' => new EE_Checkbox_Multi_Input( array(
 					'stripe_embedded_checkout' => sprintf( __( 'Use Stripe Embedded Form %s', 'event_espresso' ), $this->get_help_tab_link() )
 				)),
-				'secret_key' => new EE_Text_Input( array(
-					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
-				)),
 				'publishable_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
 				))
@@ -75,6 +72,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
+
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
@@ -86,23 +84,23 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 					$this->stripe_embedded_form( $transaction ),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'ee-stripe-token',
-							'html_name' 	=> 'stripeToken',
-							'default'			=> ''
+							'html_id' => 'ee-stripe-token',
+							'html_name' => 'stripeToken',
+							'default' => ''
 						)
 					),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'ee-stripe-token-type',
-							'html_name' 	=> 'stripeTokenType',
-							'default'			=> 'card'
+							'html_id' => 'ee-stripe-transaction-total',
+							'html_name' => 'eeTransactionTotal',
+							'default' => $transaction->total()
 						)
 					),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'ee-stripe-email',
-							'html_name' 	=> 'stripeEmail',
-							'default'			=> $transaction->primary_registration()->attendee()->email()
+							'html_id' => 'ee-stripe-prod-description',
+							'html_name' => 'stripeProdDescription',
+							'default' => $transaction->primary_registration()->event_name()
 						)
 					)
 				)
@@ -123,8 +121,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				array(
 					'layout_strategy' => new EE_Template_Layout(
 						array(
-							'layout_template_file' 	=> $this->_template_path . 'stripe_debug_info.template.php',
-							'template_args'  				=> array()
+							'layout_template_file' => $this->_template_path . 'stripe_debug_info.template.php',
+							'template_args' => array()
 						)
 					)
 				)
@@ -146,25 +144,25 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$template_args = apply_filters(
 			'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__template_args',
 			array(
-				'data_key' 				=> 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-				'TXN_grand_total' 	=> $transaction->total(),
-				'data_name' 			=> EE_Registry::instance()->CFG->organization->name,
-				'TXN_description' 	=> '',
-				'data_image' 			=> EE_Registry::instance()->CFG->organization->logo_url
+				'data_key' => 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
+				'TXN_grand_total' => $transaction->total(),
+				'data_name' => EE_Registry::instance()->CFG->organization->name,
+				'TXN_description' => '',
+				'data_image' => EE_Registry::instance()->CFG->organization->logo_url
 			)
 		);
 		if ( $this->_pm_instance->debug_mode() ) {
-			$template_args['cc_number'] 	= '4242424242424242';
-			$template_args['exp_month'] 	= date('m');
-			$template_args['exp_year'] 		= date('Y') + 4;
-			$template_args['cvc'] 				= '248';
+			$template_args['cc_number'] = '4242424242424242';
+			$template_args['exp_month'] = date('m');
+			$template_args['exp_year'] = date('Y') + 4;
+			$template_args['cvc'] = '248';
 		}
 		return new EE_Form_Section_Proper(
 			array(
 				'layout_strategy' => new EE_Template_Layout(
 					array(
-						'layout_template_file' 	=> $this->_template_path . 'stripe_embedded_form.template.php',
-						'template_args'  				=> $template_args
+						'layout_template_file' => $this->_template_path . 'stripe_embedded_form.template.php',
+						'template_args' => $template_args
 					)
 				)
 			)
@@ -181,6 +179,20 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	public function enqueue_stripe_payment_scripts() {
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
+
+		// Data needed in the JS.
+		$trans_args = array(
+			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
+			'data_name' => EE_Registry::instance()->CFG->organization->name,
+			'data_image' => EE_Registry::instance()->CFG->organization->logo_url,
+			'data_cc_number' => '4242424242424242',
+			'data_exp_month' => date('m'),
+			'data_exp_year' => date('Y') + 4,
+			'data_cvc' => '248'
+		);
+
+		// Localize the script with our transaction data.
+		wp_localize_script( 'espresso_stripe_payment_js', 'transaction_args', $trans_args);
 	}
 
 

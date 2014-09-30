@@ -19,6 +19,8 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  */
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
+	protected $_publishable_key = NULL;
+
 	/**
 	 * All the currencies supported by this gateway. Add any others you like,
 	 * as contained in the esp_currency table

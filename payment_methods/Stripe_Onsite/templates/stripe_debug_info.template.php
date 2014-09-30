@@ -1,6 +1,6 @@
 <?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' ) ) { exit('No direct script access allowed'); } ?>
 
-    <div class="sandbox-panel">
+    <div id="stripe-sandbox-panel" class="sandbox-panel">
 
 		<h6 class="important-notice"><?php _e('Debug Mode is turned ON. Payments will NOT be processed', 'event_espresso'); ?></h6>
 

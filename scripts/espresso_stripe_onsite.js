@@ -49,8 +49,8 @@ jQuery(document).ready(function($) {
     });
 
 	var handler = StripeCheckout.configure({
-		key: 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-		image: '/square-image.png',
+		key: transaction_args.data_key,
+		image: transaction_args.data_image,
 		token: function(token) {
 			// Use the token to create the charge with a server-side script.
 			$('#ee-stripe-token').val( token.id );
@@ -58,11 +58,11 @@ jQuery(document).ready(function($) {
 	});
 
 	SPCO.main_container.on( 'click', '#custom-stripe-button', function(e) {
-		// Open Checkout with further options
+		// Open Checkout with further options.
 		handler.open({
-			name: 'Demo Site',
-			description: '2 widgets ($20.00)',
-			amount: 2000
+			name: transaction_args.data_name,
+			amount: $('#ee-stripe-transaction-total').val(),
+			description: $('#ee-stripe-prod-description').val()
 		});
 		// Enable SPCO submit buttons.
 		SPCO.enable_submit_buttons();
