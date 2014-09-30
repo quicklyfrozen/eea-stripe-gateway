@@ -87,9 +87,23 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 					$this->stripe_embedded_form( $transaction ),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'ee-stripe-token',
-							'html_name' 	=> 'ee-stripe-token',
+							'html_id' 			=> 'stripeToken',
+							'html_name' 	=> 'stripeToken',
 							'default'			=> ''
+						)
+					),
+					new EE_Hidden_Input(
+						array(
+							'html_id' 			=> 'stripeTokenType',
+							'html_name' 	=> 'stripeTokenType',
+							'default'			=> 'card'
+						)
+					),
+					new EE_Hidden_Input(
+						array(
+							'html_id' 			=> 'stripeEmail',
+							'html_name' 	=> 'stripeEmail',
+							'default'			=> $transaction->primary_registration()->attendee()->email()
 						)
 					)
 				)
@@ -166,7 +180,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return void
 	 */
 	public function enqueue_stripe_payment_scripts() {
-		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', '', '2.0' );
+		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
 	}
 
