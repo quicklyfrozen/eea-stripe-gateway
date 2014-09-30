@@ -32,7 +32,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_PMT_Stripe_Onsite
 	 */
 	public function __construct( $pm_instance = NULL ) {
-
 		$this->_pretty_name = __("Stripe Onsite", 'event_espresso');
 		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
@@ -87,21 +86,21 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 					$this->stripe_embedded_form( $transaction ),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'stripeToken',
+							'html_id' 			=> 'ee-stripe-token',
 							'html_name' 	=> 'stripeToken',
 							'default'			=> ''
 						)
 					),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'stripeTokenType',
+							'html_id' 			=> 'ee-stripe-token-type',
 							'html_name' 	=> 'stripeTokenType',
 							'default'			=> 'card'
 						)
 					),
 					new EE_Hidden_Input(
 						array(
-							'html_id' 			=> 'stripeEmail',
+							'html_id' 			=> 'ee-stripe-email',
 							'html_name' 	=> 'stripeEmail',
 							'default'			=> $transaction->primary_registration()->attendee()->email()
 						)

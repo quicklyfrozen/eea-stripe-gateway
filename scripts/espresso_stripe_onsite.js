@@ -1,25 +1,5 @@
 jQuery(document).ready(function($) {
-
-    //var handler = StripeCheckout.configure({
-    //    key: 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-    //    image: '/square-image.png',
-    //    token: function(token) {
-    //        // Use the token to create the charge with a server-side script.
-    //        // You can access the token ID with `token.id`
-    //    }
-    //});
-    //
-    //document.getElementById('customButton').addEventListener('click', function(e) {
-    //    // Open Checkout with further options
-    //    handler.open({
-    //        name: 'Demo Site',
-    //        description: '2 widgets ($20.00)',
-    //        amount: 2000
-    //    });
-    //    e.preventDefault();
-    //});
-
-    SPCO.main_container.on( 'click', '.stripe-button', function() {
+   /* SPCO.main_container.on( 'click', '#spco-go-to-step-finalize_registration-submit', function(e) {
         e.preventDefault();
         e.stopPropagation();
         // Disable the submit button to prevent repeated clicks
@@ -50,10 +30,48 @@ jQuery(document).ready(function($) {
             alert('NO errors!');
 
             // set token value in hidden input so it gets submitted to the server
-            //$('#ee-stripe-token').val( response.id ) ;
+            $('#ee-stripe-token').val( response.id ) ;
             // and re-submit by triggering a click on the current step's submit button
             //SPCO.current_form_to_validate.find('.spco-next-step-btn').trigger('click');
         }
-    }
+    }*/
+    
+    var defaultButtonColor = '';
+
+    SPCO.main_container.on( 'click', '#ee-available-payment-method-inputs-stripe_onsite', function(e) {
+    	// Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
+		SPCO.disable_submit_buttons();
+
+		/*defaultButtonColor = $('.spco-next-step-btn').style.backgroundColor;
+		$('.spco-next-step-btn').each( function() {
+			$(this).style.background = '#A0A0A0';
+		});*/
+    });
+
+	var handler = StripeCheckout.configure({
+		key: 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
+		image: '/square-image.png',
+		token: function(token) {
+			// Use the token to create the charge with a server-side script.
+			$('#ee-stripe-token').val( token.id );
+		}
+	});
+
+	SPCO.main_container.on( 'click', '#custom-stripe-button', function(e) {
+		// Open Checkout with further options
+		handler.open({
+			name: 'Demo Site',
+			description: '2 widgets ($20.00)',
+			amount: 2000
+		});
+		// Enable SPCO submit buttons.
+		SPCO.enable_submit_buttons();
+		/*$('.spco-next-step-btn').each( function() {
+			$(this).style.background = backgroundColor;
+		});
+		$('#custom-stripe-button').disabled = true;
+		$('#custom-stripe-button').val('Accepted. Click "Finalize Registration"');*/
+		e.preventDefault();
+	});
 
 });
