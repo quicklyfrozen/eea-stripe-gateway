@@ -24,7 +24,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 	 */
 	public function __construct() {
 		// Include Stripe API dependencies.
-		require_once( EE_STRIPE_PATH . 'includes' . DS . 'Stripe-API.php' );
+		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 	}
 
 	public static function register_addon() {

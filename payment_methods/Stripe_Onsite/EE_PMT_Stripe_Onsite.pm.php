@@ -24,7 +24,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	protected $_template_path = NULL;
 
 
-
 	/**
 	 *
 	 * @param EE_Payment_Method $pm_instance
@@ -32,7 +31,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_PMT_Stripe_Onsite
 	 */
 	public function __construct( $pm_instance = NULL ) {
-		$this->_pretty_name = __("Stripe Onsite", 'event_espresso');
+		$this->_pretty_name = __("Stripe", 'event_espresso');
 		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
@@ -44,7 +43,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		// Scripts for generating Stripe token.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_stripe_payment_scripts' ));
 	}
-
 
 
 	/**
@@ -66,6 +64,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		));
 	}
 
+
 	/**
 	 * Creates a billing form for this payment method type.
 	 * @param \EE_Transaction $transaction
@@ -82,21 +81,21 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'subsections' => array(
 					$this->generate_billing_form_debug_content(),
 					$this->stripe_embedded_form( $transaction ),
-					new EE_Hidden_Input(
+					'ee_stripe_token' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-token',
 							'html_name' => 'stripeToken',
 							'default' => ''
 						)
 					),
-					new EE_Hidden_Input(
+					'ee_stripe_transaction_total' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-transaction-total',
 							'html_name' => 'eeTransactionTotal',
 							'default' => str_replace( array(',', '.'), '', number_format($transaction->total(), 2))
 						)
 					),
-					new EE_Hidden_Input(
+					'ee_stripe_prod_description' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-prod-description',
 							'html_name' => 'stripeProdDescription',
@@ -107,7 +106,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			)
 		);
 	}
-
 
 
 	/**
@@ -133,7 +131,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	}
 
 
-
 	/**
 	 *  Use Stripe's Embedded form.
 	 *
@@ -153,7 +150,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			)
 		);
 	}
-
 
 
 	/**
@@ -179,7 +175,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		// Localize the script with our transaction data.
 		wp_localize_script( 'espresso_stripe_payment_js', 'transaction_args', $trans_args);
 	}
-
 
 
 	/**
