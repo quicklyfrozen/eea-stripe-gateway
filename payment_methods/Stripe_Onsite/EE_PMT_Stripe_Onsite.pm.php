@@ -90,7 +90,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						array(
 							'html_id' => 'ee-stripe-transaction-total',
 							'html_name' => 'eeTransactionTotal',
-							'default' => $transaction->total()
+							'default' => str_replace( array(',', '.'), '', number_format($transaction->total(), 2))
 						)
 					),
 					new EE_Hidden_Input(
@@ -138,22 +138,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return EE_Form_Section_Proper
 	 */
 	public function stripe_embedded_form( EE_Transaction $transaction = NULL ) {
-		$template_args = apply_filters(
-			'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__template_args',
-			array(
-				'data_key' => 'pk_test_6pRNASCoBOKtIshFeQd4XMUh',
-				'TXN_grand_total' => $transaction->total(),
-				'data_name' => EE_Registry::instance()->CFG->organization->name,
-				'TXN_description' => '',
-				'data_image' => EE_Registry::instance()->CFG->organization->logo_url
-			)
-		);
-		if ( $this->_pm_instance->debug_mode() ) {
-			$template_args['cc_number'] = '4242424242424242';
-			$template_args['exp_month'] = date('m');
-			$template_args['exp_year'] = date('Y') + 4;
-			$template_args['cvc'] = '248';
-		}
+		$template_args = array();
 		return new EE_Form_Section_Proper(
 			array(
 				'layout_strategy' => new EE_Template_Layout(
