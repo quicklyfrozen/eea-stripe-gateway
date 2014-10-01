@@ -21,6 +21,8 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
 	protected $_publishable_key = NULL;
 
+	protected $_stripe_secret_key = NULL;
+
 	/**
 	 * All the currencies supported by this gateway. Add any others you like,
 	 * as contained in the esp_currency table
@@ -39,8 +41,8 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * @param array $billing_info
 	 */
 	public function do_direct_payment($payment, $billing_info = null) {
-		// Set your secret key: remember to change this to your live secret key in production
-		//Stripe::setApiKey("sk_test_BQokikJOvBiI2HlWgH4olfQ2");
+		// Set your secret key.
+		//Stripe::setApiKey( $this->_stripe_secret_key );
 
 		// Get the credit card details submitted by the form.
 		//$token = $billing_info['stripeToken'];

@@ -58,6 +58,9 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'extra_meta_inputs' => array(
 				'publishable_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
+				)),
+				'stripe_secret_key' => new EE_Text_Input( array(
+					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
 				))
 			)
 		));
