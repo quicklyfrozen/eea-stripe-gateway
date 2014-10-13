@@ -1,9 +1,12 @@
 jQuery(document).ready(function($) {
 
-    SPCO.main_container.on( 'click', '#ee-available-payment-method-inputs-stripe_onsite', function(e) {
+    SPCO.main_container.on( 'mousedown', '.spco-next-step-btn', function() {
     	// Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
-		SPCO.disable_submit_buttons();
-    });
+    	if ( ($('#custom-stripe-button').length > 0) && ($('#ee-stripe-token').val().length <= 0) ) {
+    		SPCO.disable_submit_buttons();
+    	}
+		
+	});
 
 	var handler = StripeCheckout.configure({
 		key: transaction_args.data_key,

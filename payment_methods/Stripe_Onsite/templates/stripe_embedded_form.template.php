@@ -11,6 +11,7 @@
  */
 ?>
 
+<!-- Stripe JS Button -->
 <script src="https://checkout.stripe.com/checkout.js"></script>
 
 <button id="custom-stripe-button">PAY WITH CARD</button>
