@@ -35,25 +35,24 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 		'AUD'
 	);
 
+
+
 	/**
 	 *
 	 * @param EEI_Payment $payment
-	 * @param array $billing_info
+	 * @param array       $billing_info
+	 * @return \EE_Payment|\EEI_Payment
 	 */
 	public function do_direct_payment($payment, $billing_info = null) {
-		$transaction = $payment->transaction();
-
 		// Set your secret key.
 		Stripe::setApiKey( $this->_stripe_secret_key );
-
 		// Get the credit card details submitted by the form.
 		$token = $billing_info['ee_stripe_token'];
 		$description = $billing_info['ee_stripe_prod_description'];
 		$amount = str_replace( array(',', '.'), '', number_format( $payment->amount(), 2));
-
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
-			$charge = Stripe_Charge::create( array(
+			Stripe_Charge::create( array(
 				'amount' => $amount,
 				'currency' => $payment->currency_code(),
 				'card' => $token,
@@ -64,7 +63,6 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 			$payment->set_gateway_response($e->getMessage());
 			return $payment;
 		}
-
 		//$this->log( $billing_info, $payment );
 		$payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
