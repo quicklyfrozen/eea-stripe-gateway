@@ -37,7 +37,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
-
+		$this->_requires_https = FALSE;
 		parent::__construct( $pm_instance );
 
 		// Scripts for generating Stripe token.
@@ -169,7 +169,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_cc_number' => '4242424242424242',
 			'data_exp_month' => date('m'),
 			'data_exp_year' => date('Y') + 4,
-			'data_cvc' => '248'
+			'data_cvc' => '248',
+			'accepted_message' => __( 'Accepted. Click "Finalize Registration"', 'event_espresso' ),
+			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
+			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
 		);
 
 		// Localize the script with our transaction data.
@@ -186,7 +189,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	public function help_tabs_config(){
 		return array(
 			$this->get_help_tab_name() => array(
-				'title' => __('Stripe Settings', 'event_espresso'),
+				'title' => __( 'Stripe Settings', 'event_espresso' ),
 				'filename' => 'payment_methods_overview_stripe'
 			),
 		);
