@@ -10,7 +10,5 @@
  * ------------------------------------------------------------------------
  */
 ?>
-
 <script src="https://checkout.stripe.com/checkout.js"></script>
-
-<button id="custom-stripe-button">PAY WITH CARD</button>
+<button id="custom-stripe-button"><?php _e( 'PAY WITH CARD', 'event_espresso' );?></button>
