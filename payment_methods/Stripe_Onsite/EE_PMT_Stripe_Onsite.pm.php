@@ -35,10 +35,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
-		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
 		$this->_requires_https = FALSE;
 		parent::__construct( $pm_instance );
+		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 
 		// Scripts for generating Stripe token.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_stripe_payment_scripts' ));
@@ -158,6 +158,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return void
 	 */
 	public function enqueue_stripe_payment_scripts() {
+		wp_enqueue_style( 'espresso_stripe_payment_css', EE_STRIPE_URL . 'css' . DS . 'espresso_stripe.css' );
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
 
