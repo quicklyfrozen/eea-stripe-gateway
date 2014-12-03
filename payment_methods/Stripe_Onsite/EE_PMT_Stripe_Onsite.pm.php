@@ -172,6 +172,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_exp_year' => date('Y') + 4,
 			'data_cvc' => '248',
 			'accepted_message' => __( 'Accepted. Click "Finalize Registration"', 'event_espresso' ),
+			'card_error_message' => __( 'Card Error! Please try again.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
 		);
