@@ -7,43 +7,49 @@
 General Styles
 ---------------------------------------------------------------------------------------------------- */
 
-.spco-step-dv #custom-stripe-button {
-	position: relative;
-	display: block;
-	margin:0 auto;
-	padding: 0 16px;
-	height: 40px;
-	/* Stripe Button styling */
-	line-height: 30px;
-	background: #1275FF;
-	border-radius: 4px;
-	-webkit-border-radius: 4px;
-	-moz-border-radius: 4px;
-	-ms-border-radius: 4px;
-	-o-border-radius: 4px;
-	color: #FFF;
-	font-size: 14px;
-	font-weight: bold;
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-	-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-	-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-	-ms-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-	-o-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-	background-image: -webkit-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);
-	background-image: -moz-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);
-	background-image: -ms-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);
-	background-image: -o-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);
-	background-image: linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);
-}
+/*.spco-step-dv #custom-stripe-button {*/
+	/*position: relative;*/
+	/*display: block;*/
+	/*margin:0 auto;*/
+	/*padding: 0 16px;*/
+	/*height: 40px;*/
+	/*line-height: 30px;*/
+	/*background: #1275FF;*/
+	/*border-radius: 4px;*/
+	/*-webkit-border-radius: 4px;*/
+	/*-moz-border-radius: 4px;*/
+	/*-ms-border-radius: 4px;*/
+	/*-o-border-radius: 4px;*/
+	/*color: #FFF;*/
+	/*font-size: 14px;*/
+	/*font-weight: bold;*/
+	/*box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);*/
+	/*-webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);*/
+	/*-moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);*/
+	/*-ms-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);*/
+	/*-o-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);*/
+	/*background-image: -webkit-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);*/
+	/*background-image: -moz-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);*/
+	/*background-image: -ms-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);*/
+	/*background-image: -o-linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);*/
+	/*background-image: linear-gradient(#7dc5ee, #008cdd 75%, #30a2e4);*/
+/*}*/
 
-.spco-step-dv #custom-stripe-button:hover {
-	background-image: -webkit-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);
-	background-image: -moz-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);
-	background-image: -ms-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);
-	background-image: -o-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);
-	background-image: linear-gradient(#70b1d6, #008cdd 75%, #44abe6);
-}
+/*.spco-step-dv #custom-stripe-button:hover {*/
+	/*background-image: -webkit-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);*/
+	/*background-image: -moz-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);*/
+	/*background-image: -ms-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);*/
+	/*background-image: -o-linear-gradient(#70b1d6, #008cdd 75%, #44abe6);*/
+	/*background-image: linear-gradient(#70b1d6, #008cdd 75%, #44abe6);*/
+/*}*/
 
+/*.spco-step-dv #custom-stripe-button.spco-button-success {*/
+	/*background: #1A89C8;*/
+/*}*/
+
+#ee-stripe-button-btn {
+	float : right;
+}
 /* Media Query for screens smaller then 768px (iPad portrait)
 ---------------------------------------------------------------------------------------------------- */
 
