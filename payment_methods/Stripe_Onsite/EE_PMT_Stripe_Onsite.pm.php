@@ -32,7 +32,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 */
 	public function __construct( $pm_instance = NULL ) {
 		$this->_pretty_name = __("Stripe", 'event_espresso');
-		$this->_default_description = __( 'Click the "PAY WITH CARD" button to proceed with payment.', 'event_espresso' );
+		$this->_default_description = __( 'Click the "Pay Now" button to proceed with payment.', 'event_espresso' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
@@ -71,7 +71,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
-
+		EE_Registry::instance()->load_helper( 'Money' );
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
@@ -80,7 +80,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'html_class'=> 'ee-billing-form',
 				'subsections' => array(
 					$this->generate_billing_form_debug_content(),
-					$this->stripe_embedded_form( $transaction ),
+					$this->stripe_embedded_form(),
 					'ee_stripe_token' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-token',
@@ -88,12 +88,19 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 							'default' => ''
 						)
 					),
+					'ee_stripe_transaction_email' => new EE_Hidden_Input(
+						array(
+							'html_id' => 'ee-stripe-transaction-email',
+							'html_name' => 'eeTransactionEmail',
+							'default' => $transaction->primary_registration()->attendee()->email()
+							)
+					),
 					'ee_stripe_transaction_total' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-transaction-total',
 							'html_name' => 'eeTransactionTotal',
-							'default' => str_replace( array(',', '.'), '', number_format($transaction->total(), 2))
-						)
+							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100
+							)
 					),
 					'ee_stripe_prod_description' => new EE_Hidden_Input(
 						array(
@@ -134,10 +141,9 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	/**
 	 *  Use Stripe's Embedded form.
 	 *
-	 * @param \EE_Transaction $transaction
 	 * @return EE_Form_Section_Proper
 	 */
-	public function stripe_embedded_form( EE_Transaction $transaction = NULL ) {
+	public function stripe_embedded_form() {
 		$template_args = array();
 		return new EE_Form_Section_Proper(
 			array(
@@ -167,12 +173,14 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
 			'data_name' => EE_Registry::instance()->CFG->organization->name,
 			'data_image' => EE_Registry::instance()->CFG->organization->logo_url,
-			'data_cc_number' => '4242424242424242',
-			'data_exp_month' => date('m'),
-			'data_exp_year' => date('Y') + 4,
-			'data_cvc' => '248',
-			'accepted_message' => __( 'Accepted. Click "Finalize Registration"', 'event_espresso' ),
-			'card_error_message' => __( 'Card Error! Please try again.', 'event_espresso' ),
+			'data_currency' => EE_Registry::instance()->CFG->currency->code,
+//			'data_cc_number' => '4242424242424242',
+//			'data_exp_month' => date('m'),
+//			'data_exp_year' => date('Y') + 4,
+//			'data_cvc' => '248',
+			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
+			'accepted_message' => __( 'Payment Accepted. Click "Finalize Registration" to proceed.', 'event_espresso' ),
+			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
 		);
