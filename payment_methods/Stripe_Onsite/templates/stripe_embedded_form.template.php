@@ -10,6 +10,10 @@
  * ------------------------------------------------------------------------
  */
 ?>
-<!-- Stripe JS Button -->
-<script src="https://checkout.stripe.com/checkout.js"></script>
-<button id="custom-stripe-button"><?php _e( 'PAY WITH CARD', 'event_espresso' );?></button>
+<div id="ee-stripe-button-dv">
+	<!-- Stripe JS Button -->
+	<script src="https://checkout.stripe.com/checkout.js"></script>
+	<button id="ee-stripe-button-btn"><?php _e( 'Pay Now', 'event_espresso' );?></button>
+	<p id="ee-stripe-response-pg" class="clear" style="display: none;"></p>
+	<div class="clear"></div>
+</div>
