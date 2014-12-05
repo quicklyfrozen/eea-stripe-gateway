@@ -80,9 +80,7 @@ jQuery(document).ready(function($) {
 			if ( typeof SPCO === 'undefined' ) {
 				//alert('no SPCO!');
 				EE_STRIPE.hide_stripe();
-				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
-				EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'EE_STRIPE.init() error', transaction_args.no_SPCO_error ), '' );
-				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification );
+				EE_STRIPE.display_error( transaction_args.no_SPCO_error );
 				return;
 			}
 			// ensure that the StripeCheckout js class is loaded
@@ -234,6 +232,25 @@ jQuery(document).ready(function($) {
 			$(window).on( 'popstate', function() {
 				EE_STRIPE.handler.close();
 			});
+		},
+
+
+
+		/**
+		 * @function display_error
+		 * @param  {string} msg
+		 */
+		display_error : function( msg ) {
+			// center notices on screen
+			$('#espresso-ajax-notices').eeCenter( 'fixed' );
+			// target parent container
+			var espresso_ajax_msg = $('#espresso-ajax-notices-error');
+			//  actual message container
+			espresso_ajax_msg.children('.espresso-notices-msg').html( msg );
+			// bye bye spinner
+			$('#espresso-ajax-loading').fadeOut('fast');
+			// display message
+			espresso_ajax_msg.removeClass('hidden').show().delay( 10000 ).fadeOut();
 		}
 
 
