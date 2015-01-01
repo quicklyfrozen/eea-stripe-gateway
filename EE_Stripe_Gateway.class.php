@@ -1,6 +1,9 @@
 <?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' )) { exit('NO direct script access allowed'); }
+// Define the plugin directory path and URL.
+define( 'EE_STRIPE_BASENAME', plugin_basename( EE_STRIPE_PLUGIN_FILE ) );
+define( 'EE_STRIPE_PATH', plugin_dir_path( __FILE__ ) );
+define( 'EE_STRIPE_URL', plugin_dir_url( __FILE__ ) );
 /**
- * ------------------------------------------------------------------------
  *
  * Class  EE_Stripe_Gateway
  *
@@ -8,24 +11,8 @@
  * @subpackage		espresso-stripe-gateway
  * @author			Event Espresso
  * @ version		 	$VID:$
- *
- * ------------------------------------------------------------------------
  */
-
-// Define the plugin directory path and URL.
-define( 'EE_STRIPE_BASENAME', plugin_basename( EE_STRIPE_PLUGIN_FILE ) );
-define( 'EE_STRIPE_PATH', plugin_dir_path( __FILE__ ) );
-define( 'EE_STRIPE_URL', plugin_dir_url( __FILE__ ) );
-
 class EE_Stripe_Gateway extends EE_Addon {
-
-	/**
-	 * class constructor
-	 */
-	public function __construct() {
-		// Include Stripe API dependencies.
-		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
-	}
 
 	public static function register_addon() {
 		// Register addon via Plugin API.
@@ -48,6 +35,21 @@ class EE_Stripe_Gateway extends EE_Addon {
 				),
 		));
 	}
+
+
+
+	/**
+	 * 	Additional admin hooks.
+	 *
+	 *  @access 	public
+	 *  @return 	void
+	 */
+	public static function load_dependencies() {
+		// Include Stripe API dependencies.
+		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
+	}
+
+
 
 	/**
 	 * 	Additional admin hooks.
