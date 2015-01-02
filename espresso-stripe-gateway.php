@@ -50,12 +50,5 @@ function load_espresso_stripe() {
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_stripe' );
 
 
-/**
- * 	captures plugin activation errors for debugging
- */
-add_action( 'activated_plugin', array( 'EEH_Debug_Tools', 'ee_plugin_activation_errors' ));
-
-
-
 // End of file espresso_new_payment_method.php
 // Location: wp-content/plugins/espresso-stripe-gateway/espresso-stripe.php
