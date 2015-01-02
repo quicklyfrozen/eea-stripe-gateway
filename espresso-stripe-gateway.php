@@ -4,7 +4,7 @@
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Stripe Gateway adds 2 new payment methods: onsite and offsite.
 
-  Version: 1.0.0
+  Version: 1.0.1
 
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
@@ -38,7 +38,7 @@
  *
  * ------------------------------------------------------------------------
  */
-define( 'EE_STRIPE_VERSION', '1.0.0' );
+define( 'EE_STRIPE_VERSION', '1.0.1' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
 
 function load_espresso_stripe() {
@@ -48,6 +48,14 @@ function load_espresso_stripe() {
   }
 }
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_stripe' );
+
+
+/**
+ * 	captures plugin activation errors for debugging
+ */
+add_action( 'activated_plugin', array( 'EEH_Debug_Tools', 'ee_plugin_activation_errors' ));
+
+
 
 // End of file espresso_new_payment_method.php
 // Location: wp-content/plugins/espresso-stripe-gateway/espresso-stripe.php
