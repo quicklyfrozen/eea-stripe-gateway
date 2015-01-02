@@ -14,6 +14,15 @@ define( 'EE_STRIPE_URL', plugin_dir_url( __FILE__ ) );
  */
 class EE_Stripe_Gateway extends EE_Addon {
 
+	/**
+	 *    class constructor
+	 * @return EE_Stripe_Gateway
+	 */
+	function __construct() {
+	}
+
+
+
 	public static function register_addon() {
 		// Register addon via Plugin API.
 		EE_Register_Addon::register(
@@ -34,19 +43,6 @@ class EE_Stripe_Gateway extends EE_Addon {
 					EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
 				),
 		));
-	}
-
-
-
-	/**
-	 * 	Additional admin hooks.
-	 *
-	 *  @access 	public
-	 *  @return 	void
-	 */
-	public static function load_dependencies() {
-		// Include Stripe API dependencies.
-		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 	}
 
 
