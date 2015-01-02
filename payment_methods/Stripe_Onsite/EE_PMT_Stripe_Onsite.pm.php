@@ -33,7 +33,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	public function __construct( $pm_instance = NULL ) {
 		$this->_pretty_name = __("Stripe", 'event_espresso');
 		$this->_default_description = __( 'Click the "Pay Now" button to proceed with payment.', 'event_espresso' );
-		EE_Stripe_Gateway::load_dependencies();
+		// Include Stripe API dependencies.
+		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
