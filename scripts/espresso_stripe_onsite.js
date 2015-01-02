@@ -71,7 +71,6 @@ jQuery(document).ready(function($) {
 		 */
 		initialize : function() {
 
-			//alert('initialize?');
 			if ( EE_STRIPE.initialized ) {
 				//alert('already initialized!');
 				return;
@@ -270,7 +269,8 @@ jQuery(document).ready(function($) {
 
 
 	// also initialize Stripe Checkout if the selected method of payment changes
-	SPCO.main_container.on( 'spco_switch_payment_methods', function( payment_method ) {
+	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
+		SPCO.console_log_object( 'payment_method', payment_method, 0 );
 		if ( typeof payment_method !== 'undefined' && payment_method === 'stripe_onsite' ) {
 			EE_STRIPE.initialize();
 		}
