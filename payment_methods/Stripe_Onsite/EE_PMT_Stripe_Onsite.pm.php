@@ -173,8 +173,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		// Data needed in the JS.
 		$trans_args = array(
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
-			'data_name' => EE_Registry::instance()->CFG->organization->name,
-			'data_image' => EE_Registry::instance()->CFG->organization->logo_url,
+			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
+			'data_image' => EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 //			'data_cc_number' => '4242424242424242',
 //			'data_exp_month' => date('m'),
