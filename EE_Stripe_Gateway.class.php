@@ -34,7 +34,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 				'admin_callback' => 'additional_stripe_admin_hooks',
 				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
 				'pue_options' => array(
-					'pue_plugin_slug' => 'espresso-stripe-gateway',
+					'pue_plugin_slug' => 'eea-stripe-gateway',
 					'plugin_basename' => EE_STRIPE_BASENAME,
 					'checkPeriod' => '24',
 					'use_wp_update' => FALSE,
