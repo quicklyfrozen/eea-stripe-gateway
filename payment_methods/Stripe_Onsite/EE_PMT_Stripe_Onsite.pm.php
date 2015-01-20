@@ -33,15 +33,16 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	public function __construct( $pm_instance = NULL ) {
 		$this->_pretty_name = __("Stripe", 'event_espresso');
 		$this->_default_description = __( 'Click the "Pay Now" button to proceed with payment.', 'event_espresso' );
+		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
+		$this->_requires_https = FALSE;
+		$this->_cache_billing_form = FALSE;
+		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 		// Include Stripe API dependencies.
 		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
-		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
-		$this->_requires_https = FALSE;
-		parent::__construct( $pm_instance );
-		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
 
+		parent::__construct( $pm_instance );
 		// Scripts for generating Stripe token.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_stripe_payment_scripts' ));
 	}
@@ -74,6 +75,14 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
 		EE_Registry::instance()->load_helper( 'Money' );
+		$event = '';
+		$email = '';
+		if ( $transaction->primary_registration() instanceof EE_Registration ) {
+			$event = $transaction->primary_registration()->event_name();
+			if ( $transaction->primary_registration()->attendee() instanceof EE_Attendee ) {
+				$email = $transaction->primary_registration()->attendee()->email();
+			}
+		}
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
@@ -94,21 +103,23 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						array(
 							'html_id' => 'ee-stripe-transaction-email',
 							'html_name' => 'eeTransactionEmail',
-							'default' => $transaction->primary_registration()->attendee()->email()
-							)
+							'default' => $email,
+							'validation_strategies' => array( new EE_Email_Validation_Strategy() )
+						)
 					),
 					'ee_stripe_transaction_total' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-transaction-total',
 							'html_name' => 'eeTransactionTotal',
-							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100
-							)
+							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
+							'validation_strategies' => array( new EE_Float_Validation_Strategy() )
+						)
 					),
 					'ee_stripe_prod_description' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-prod-description',
 							'html_name' => 'stripeProdDescription',
-							'default' => $transaction->primary_registration()->event_name()
+							'default' => $event
 						)
 					)
 				)
