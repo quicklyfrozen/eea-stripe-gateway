@@ -46,17 +46,13 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	public function do_direct_payment($payment, $billing_info = null) {
 		// Set your secret key.
 		Stripe::setApiKey( $this->_stripe_secret_key );
-		// Get the credit card details submitted by the form.
-		$token = $billing_info['ee_stripe_token'];
-		$description = $billing_info['ee_stripe_prod_description'];
-		$amount = str_replace( array(',', '.'), '', number_format( $payment->amount(), 2));
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
 			Stripe_Charge::create( array(
-				'amount' => $amount,
+				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2)),
 				'currency' => $payment->currency_code(),
-				'card' => $token,
-				'description' => $description
+				'card' => $billing_info['ee_stripe_token'],
+				'description' => $billing_info['ee_stripe_prod_description']
 			));
 		} catch ( Stripe_CardError $e ) {
 			$payment->set_status($this->_pay_model->failed_status());
