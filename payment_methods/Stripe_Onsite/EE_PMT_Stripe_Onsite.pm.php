@@ -36,7 +36,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
 		$this->_requires_https = FALSE;
 		$this->_cache_billing_form = FALSE;
-		$this->_default_button_url = $this->file_url() . 'lib' . DS . 'stripe-default-logo.png';
+		$this->_default_button_url = EE_STRIPE_URL . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'lib' . DS . 'stripe-default-logo.png';
 		// Include Stripe API dependencies.
 		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
