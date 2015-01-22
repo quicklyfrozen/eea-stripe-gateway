@@ -35,6 +35,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_default_description = __( 'Click the "Pay Now" button to proceed with payment.', 'event_espresso' );
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
 		$this->_requires_https = FALSE;
+		$this->_has_billing_form = TRUE;
 		$this->_cache_billing_form = FALSE;
 		$this->_default_button_url = EE_STRIPE_URL . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'lib' . DS . 'stripe-default-logo.png';
 		// Include Stripe API dependencies.
@@ -74,6 +75,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
+		printr( __FUNCTION__, __CLASS__, __FILE__, __LINE__ );
 		EE_Registry::instance()->load_helper( 'Money' );
 		$event = '';
 		$email = '';
