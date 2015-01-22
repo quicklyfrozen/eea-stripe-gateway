@@ -75,7 +75,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return \EE_Billing_Info_Form
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
-		printr( __FUNCTION__, __CLASS__, __FILE__, __LINE__ );
 		EE_Registry::instance()->load_helper( 'Money' );
 		$event = '';
 		$email = '';
