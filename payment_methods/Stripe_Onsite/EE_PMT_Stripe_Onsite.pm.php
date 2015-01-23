@@ -84,48 +84,50 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
-		return new EE_Billing_Info_Form(
-			$this->_pm_instance,
-			array(
-				'name' => 'stripe_onsite_billing_form',
-				'html_id'=> 'ee-Stripe-billing-form',
-				'html_class'=> 'ee-billing-form',
-				'subsections' => array(
-					$this->generate_billing_form_debug_content(),
-					$this->stripe_embedded_form(),
-					'ee_stripe_token' => new EE_Hidden_Input(
-						array(
-							'html_id' => 'ee-stripe-token',
-							'html_name' => 'stripeToken',
-							'default' => ''
-						)
-					),
-					'ee_stripe_transaction_email' => new EE_Hidden_Input(
-						array(
-							'html_id' => 'ee-stripe-transaction-email',
-							'html_name' => 'eeTransactionEmail',
-							'default' => $email,
-							'validation_strategies' => array( new EE_Email_Validation_Strategy() )
-						)
-					),
-					'ee_stripe_transaction_total' => new EE_Hidden_Input(
-						array(
-							'html_id' => 'ee-stripe-transaction-total',
-							'html_name' => 'eeTransactionTotal',
-							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
-							'validation_strategies' => array( new EE_Float_Validation_Strategy() )
-						)
-					),
-					'ee_stripe_prod_description' => new EE_Hidden_Input(
-						array(
-							'html_id' => 'ee-stripe-prod-description',
-							'html_name' => 'stripeProdDescription',
-							'default' => $event
-						)
+
+		$form_name = 'Stripe_Onsite_Billing_Form';
+		$form_args = array(
+			'name' => $form_name,
+			'html_id'=> 'ee-Stripe-billing-form',
+			'html_class'=> 'ee-billing-form',
+			'subsections' => array(
+				$this->generate_billing_form_debug_content(),
+				$this->stripe_embedded_form(),
+				'ee_stripe_token' => new EE_Hidden_Input(
+					array(
+						'html_id' => 'ee-stripe-token',
+						'html_name' => 'stripeToken',
+						'default' => ''
+					)
+				),
+				'ee_stripe_transaction_email' => new EE_Hidden_Input(
+					array(
+						'html_id' => 'ee-stripe-transaction-email',
+						'html_name' => 'eeTransactionEmail',
+						'default' => $email,
+						'validation_strategies' => array( new EE_Email_Validation_Strategy() )
+					)
+				),
+				'ee_stripe_transaction_total' => new EE_Hidden_Input(
+					array(
+						'html_id' => 'ee-stripe-transaction-total',
+						'html_name' => 'eeTransactionTotal',
+						'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
+						'validation_strategies' => array( new EE_Float_Validation_Strategy() )
+					)
+				),
+				'ee_stripe_prod_description' => new EE_Hidden_Input(
+					array(
+						'html_id' => 'ee-stripe-prod-description',
+						'html_name' => 'stripeProdDescription',
+						'default' => $event
 					)
 				)
 			)
 		);
+
+		$billing_form = new EE_Billing_Info_Form( $this->_pm_instance, $form_args );
+		return $billing_form;
 	}
 
 
