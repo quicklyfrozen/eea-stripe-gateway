@@ -2,7 +2,7 @@
 /*
   Plugin Name: Event Espresso - Stripe Gateway
   Plugin URI: http://www.eventespresso.com
-  Description: The Event Espresso Stripe Gateway adds 2 new payment methods: onsite and offsite.
+  Description: The Event Espresso Stripe Gateway adds a new onsite payment method.
 
   Version: 1.1.0.rc.007
 

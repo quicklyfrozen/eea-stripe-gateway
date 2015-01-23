@@ -1,5 +1,5 @@
 {
-	"versionFile" : "espresso-stripe-gateway.php",
+	"versionFile" : "eea-stripe-gateway.php",
 	"slug" : "eea-stripe-gateway",
 	"name" : "Event Espresso 4 Stripe Gateway",
 	"archiveBaseUrl" : "http://build.eventespresso.com/",
