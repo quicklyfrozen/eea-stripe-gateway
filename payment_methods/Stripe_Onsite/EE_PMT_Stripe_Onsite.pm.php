@@ -84,50 +84,48 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
-
-		$form_name = 'Stripe_Onsite_Billing_Form';
-		$form_args = array(
-			'name' => $form_name,
-			'html_id'=> 'ee-Stripe-billing-form',
-			'html_class'=> 'ee-billing-form',
-			'subsections' => array(
-				$this->generate_billing_form_debug_content(),
-				$this->stripe_embedded_form(),
-				'ee_stripe_token' => new EE_Hidden_Input(
-					array(
-						'html_id' => 'ee-stripe-token',
-						'html_name' => 'stripeToken',
-						'default' => ''
-					)
-				),
-				'ee_stripe_transaction_email' => new EE_Hidden_Input(
-					array(
-						'html_id' => 'ee-stripe-transaction-email',
-						'html_name' => 'eeTransactionEmail',
-						'default' => $email,
-						'validation_strategies' => array( new EE_Email_Validation_Strategy() )
-					)
-				),
-				'ee_stripe_transaction_total' => new EE_Hidden_Input(
-					array(
-						'html_id' => 'ee-stripe-transaction-total',
-						'html_name' => 'eeTransactionTotal',
-						'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
-						'validation_strategies' => array( new EE_Float_Validation_Strategy() )
-					)
-				),
-				'ee_stripe_prod_description' => new EE_Hidden_Input(
-					array(
-						'html_id' => 'ee-stripe-prod-description',
-						'html_name' => 'stripeProdDescription',
-						'default' => $event
+		return new EE_Billing_Info_Form(
+			$this->_pm_instance,
+			array(
+				'name' => 'Stripe_Onsite_Billing_Form',
+				'html_id'=> 'ee-Stripe-billing-form',
+				'html_class'=> 'ee-billing-form',
+				'subsections' => array(
+					$this->generate_billing_form_debug_content(),
+					$this->stripe_embedded_form(),
+					'ee_stripe_token' => new EE_Hidden_Input(
+						array(
+							'html_id' => 'ee-stripe-token',
+							'html_name' => 'stripeToken',
+							'default' => ''
+						)
+					),
+					'ee_stripe_transaction_email' => new EE_Hidden_Input(
+						array(
+							'html_id' => 'ee-stripe-transaction-email',
+							'html_name' => 'eeTransactionEmail',
+							'default' => $email,
+							'validation_strategies' => array( new EE_Email_Validation_Strategy() )
+						)
+					),
+					'ee_stripe_transaction_total' => new EE_Hidden_Input(
+						array(
+							'html_id' => 'ee-stripe-transaction-total',
+							'html_name' => 'eeTransactionTotal',
+							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
+							'validation_strategies' => array( new EE_Float_Validation_Strategy() )
+						)
+					),
+					'ee_stripe_prod_description' => new EE_Hidden_Input(
+						array(
+							'html_id' => 'ee-stripe-prod-description',
+							'html_name' => 'stripeProdDescription',
+							'default' => $event
+						)
 					)
 				)
 			)
 		);
-
-		$billing_form = new EE_Billing_Info_Form( $this->_pm_instance, $form_args );
-		return $billing_form;
 	}
 
 
@@ -190,18 +188,20 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
 			'data_image' => EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
-//			'data_cc_number' => '4242424242424242',
-//			'data_exp_month' => date('m'),
-//			'data_exp_year' => date('Y') + 4,
-//			'data_cvc' => '248',
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
 			'accepted_message' => __( 'Payment Accepted. Click "Finalize Registration" to proceed.', 'event_espresso' ),
 			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
 		);
+		if ( $this->_pm_instance->debug_mode() ) {
+			$trans_args['data_cc_number'] = '4242424242424242';
+			$trans_args['data_exp_month'] = date('m');
+			$trans_args['data_exp_year'] = date('Y') + 4;
+			$trans_args['data_cvc'] = '248';
+		}
 
-		// Localize the script with our transaction data.
+			// Localize the script with our transaction data.
 		wp_localize_script( 'espresso_stripe_payment_js', 'transaction_args', $trans_args);
 	}
 
