@@ -263,7 +263,7 @@ jQuery(document).ready(function($) {
 			//SPCO.console_log( 'initialize', 'set_listener_for_submit_payment_button', true );
 			SPCO.main_container.on( 'click', EE_STRIPE.submit_button_id, function(e) {
 				e.preventDefault();
-				e.stopPropagation();
+				//e.stopPropagation();
 				SPCO.hide_notices();
 				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
 				EE_STRIPE.handler.open({
