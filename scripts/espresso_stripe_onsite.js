@@ -204,6 +204,25 @@ jQuery(document).ready(function($) {
 			data.noheader = true;
 			data.ee_front_ajax = true;
 			data.email = card_info.name;
+			// attempt to capture address info
+			if ( typeof card_info.address_line1 !== 'undefined' && card_info.address_line1 !== '' ) {
+				data.ATT_address = card_info.address_line1;
+			}
+			if ( typeof card_info.address_line2 !== 'undefined' && card_info.address_line2 !== '' ) {
+				data.ATT_address2 = card_info.address_line2;
+			}
+			if ( typeof card_info.address_city !== 'undefined' && card_info.address_city !== '' ) {
+				data.ATT_city = card_info.address_city;
+			}
+			if ( typeof card_info.address_state !== 'undefined' && card_info.address_state !== '' ) {
+				data.ATT_state = card_info.address_state;
+			}
+			if ( typeof card_info.address_zip !== 'undefined' && card_info.address_zip !== '' ) {
+				data.ATT_zip = card_info.address_zip;
+			}
+			if ( typeof card_info.address_country !== 'undefined' && card_info.address_country !== '' ) {
+				data.ATT_country = card_info.address_country;
+			}
 
 			$.ajax({
 				type: 'POST',
