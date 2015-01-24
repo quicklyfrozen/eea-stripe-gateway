@@ -139,6 +139,9 @@ jQuery(document).ready(function($) {
 					} else {
 						EE_STRIPE.checkout_success( stripe_token );
 					}
+					if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name  !== 'undefined' ) {
+						EE_STRIPE.save_card_details( stripe_token.card );
+					}
 				}
 			});
 		},
@@ -178,6 +181,44 @@ jQuery(document).ready(function($) {
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				EE_STRIPE.stripe_response.text( transaction_args.card_error_message ).addClass( 'important-notice error' ).show();
 			}
+		},
+
+
+
+		/**
+		 * @function save_email_address
+		 * @param  {object} card_info
+		 */
+		save_card_details : function( card_info ) {
+
+			//SPCO.console_log_object( 'card_info', card_info, 0 );
+
+			var data={};
+			data.action = 'save_payer_details';
+			data.step = 'payment_options';
+			data.e_reg_url_link = eei18n.e_reg_url_link;
+			data.revisit = eei18n.revisit;
+			data.EESID = eei18n.EESID;
+			data.generate_reg_form = true;
+			data.process_form_submission = false;
+			data.noheader = true;
+			data.ee_front_ajax = true;
+			data.email = card_info.name;
+
+			$.ajax({
+				type: 'POST',
+				url: eei18n.ajax_url,
+				data: data,
+				dataType: "json",
+				success: function( response ) {
+					if ( typeof response.errors !== 'undefined' && response.errors !== '' ) {
+						SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
+						EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'Stripe save_card_details error', response.errors ), '' );
+						SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
+					}
+				}
+			});
+
 		},
 
 
