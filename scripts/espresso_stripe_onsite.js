@@ -72,8 +72,10 @@ jQuery(document).ready(function($) {
 		initialize : function() {
 
 			EE_STRIPE.initialize_objects();
+			EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
 
-			if ( EE_STRIPE.initialized ) {
+			// has the Stripe gateway has been selected ? or already initialized?
+			if ( ! EE_STRIPE.submit_payment_button.length || EE_STRIPE.initialized ) {
 				//SPCO.console_log( 'initialize', 'already initialized!', true );
 				return;
 			}
@@ -90,10 +92,6 @@ jQuery(document).ready(function($) {
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
 				EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'EE_STRIPE.init() error', transaction_args.no_StripeCheckout_error ), '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
-				return;
-			}
-			// ensure that the Stripe gateway has been selected
-			if ( ! EE_STRIPE.submit_payment_button.length ) {
 				return;
 			}
 			EE_STRIPE.set_up_handler();
@@ -246,12 +244,23 @@ jQuery(document).ready(function($) {
 		 * @function set_listener_for_payment_method_selector
 		 */
 		set_listener_for_payment_method_selector : function() {
+			//SPCO.main_container.on( 'click', '.spco-payment-method', function() {
 			SPCO.main_container.on( 'click', '.spco-next-step-btn', function() {
-				// Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
-				if ( EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
-					SPCO.disable_submit_buttons();
-				}
+				EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
 			});
+		},
+
+
+
+		/**
+		 * @function disable_SPCO_submit_buttons_if_Stripe_selected
+		 * Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
+		 */
+		disable_SPCO_submit_buttons_if_Stripe_selected : function() {
+			if ( EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
+				SPCO.allow_enable_submit_buttons = false;
+				SPCO.disable_submit_buttons();
+			}
 		},
 
 
@@ -329,7 +338,6 @@ jQuery(document).ready(function($) {
 	// initialize Stripe Checkout if the SPCO reg step changes to "payment_options"
 	SPCO.main_container.on( 'spco_display_step', function( event, step_to_show ) {
 		if ( typeof step_to_show !== 'undefined' && step_to_show === 'payment_options' ) {
-			//SPCO.console_log( 'main_container.on', 'spco_display_step', true );
 			EE_STRIPE.initialize();
 		}
 	});
@@ -338,9 +346,8 @@ jQuery(document).ready(function($) {
 
 	// also initialize Stripe Checkout if the selected method of payment changes
 	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
-		SPCO.console_log_object( 'payment_method', payment_method, 0 );
+		//SPCO.console_log( 'payment_method', payment_method, false );
 		if ( typeof payment_method !== 'undefined' && payment_method === 'stripe_onsite' ) {
-			//SPCO.console_log( 'main_container.on', 'spco_switch_payment_methods', true );
 			EE_STRIPE.initialize();
 		}
 	});
