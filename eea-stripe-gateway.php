@@ -1,6 +1,6 @@
 <?php
 /*
-  Plugin Name: Event Espresso - Stripe Gateway
+  Plugin Name: Event Espresso - Stripe Gateway (EE 4.6.0+)
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Stripe Gateway adds a new onsite payment method.
 
