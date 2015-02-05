@@ -57,9 +57,20 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 		} catch ( Stripe_CardError $e ) {
 			$payment->set_status($this->_pay_model->failed_status());
 			$payment->set_gateway_response($e->getMessage());
+
+			$e_json = $e->getJsonBody();
+			$error = $e_json['error'];
+			$this->log( $error['message'], $payment );
+			return $payment;
+		} catch ( Stripe_Error $e ) {
+			$payment->set_status($this->_pay_model->failed_status());
+			$payment->set_gateway_response($e->getMessage());
+
+			$this->log( $e->getMessage(), $payment );
 			return $payment;
 		}
-		//$this->log( $billing_info, $payment );
+		
+		$this->log( $billing_info, $payment );
 		$payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}
