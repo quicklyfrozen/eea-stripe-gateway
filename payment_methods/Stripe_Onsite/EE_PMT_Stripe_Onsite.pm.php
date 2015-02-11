@@ -38,7 +38,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_has_billing_form = TRUE;
 		$this->_cache_billing_form = FALSE;
 		$this->_default_button_url = EE_STRIPE_URL . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'lib' . DS . 'stripe-cc-logo.png';
-		
+
 		// Include Stripe API dependencies.
 		if ( ! class_exists('Stripe') ) {
 			require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
@@ -63,10 +63,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		return new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
 				'publishable_key' => new EE_Text_Input( array(
-					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
+					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() ),
+					'required' => true
 				)),
 				'stripe_secret_key' => new EE_Text_Input( array(
-					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
+					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() ),
+					'required' => true
 				))
 			)
 		));
