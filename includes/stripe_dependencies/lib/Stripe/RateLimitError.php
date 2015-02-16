@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 class Stripe_RateLimitError extends Stripe_InvalidRequestError
 {
   public function __construct($message, $param, $httpStatus=null,

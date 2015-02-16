@@ -1,6 +1,8 @@
 <?php
 
-class Stripe_Object implements ArrayAccess
+namespace EEA_Stripe;
+
+class Stripe_Object implements \ArrayAccess
 {
   /**
    * @var Stripe_Util_Set Attributes that should not be sent to the API because
@@ -136,6 +138,7 @@ class Stripe_Object implements ArrayAccess
    */
   public static function scopedConstructFrom($class, $values, $apiKey=null)
   {
+    $class = __NAMESPACE__ . '\\' . $class;
     $obj = new $class(isset($values['id']) ? $values['id'] : null, $apiKey);
     $obj->refreshFrom($values, $apiKey);
     return $obj;

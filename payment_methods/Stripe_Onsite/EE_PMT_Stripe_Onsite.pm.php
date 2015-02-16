@@ -1,8 +1,4 @@
-<?php
-
-if (!defined('EVENT_ESPRESSO_VERSION')) {
-	exit('No direct script access allowed');
-}
+<?php if ( ! defined('EVENT_ESPRESSO_VERSION') ) { exit('No direct script access allowed'); }
 
 /**
  *
@@ -40,9 +36,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_default_button_url = EE_STRIPE_URL . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'lib' . DS . 'stripe-cc-logo.png';
 
 		// Include Stripe API dependencies.
-		if ( ! class_exists('Stripe') ) {
-			require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
-		}
+		require_once( EE_STRIPE_PATH . 'includes' . DS . 'stripe_dependencies' . DS . 'lib' . DS . 'Stripe.php' );
 
 		require_once( $this->file_folder() . 'EEG_Stripe_Onsite.gateway.php' );
 		$this->_gateway = new EEG_Stripe_Onsite();
@@ -102,7 +96,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 					'ee_stripe_token' => new EE_Hidden_Input(
 						array(
 							'html_id' => 'ee-stripe-token',
-							'html_name' => 'stripeToken',
+							'html_name' => 'EEA_stripeToken',
 							'default' => ''
 						)
 					),

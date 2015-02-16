@@ -1,6 +1,8 @@
 <?php
 
-class Stripe_Error extends Exception
+namespace EEA_Stripe;
+
+class Stripe_Error extends \Exception
 {
   public function __construct($message, $httpStatus=null,
       $httpBody=null, $jsonBody=null

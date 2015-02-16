@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 class Stripe_List extends Stripe_Object
 {
   public function all($params=null)

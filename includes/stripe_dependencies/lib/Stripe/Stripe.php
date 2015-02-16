@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 abstract class Stripe
 {
   /**

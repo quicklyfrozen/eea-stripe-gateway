@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 class Stripe_Card extends Stripe_ApiResource
 {
   public static function constructFrom($values, $apiKey=null)

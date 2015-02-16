@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 abstract class Stripe_ApiResource extends Stripe_Object
 {
   protected static function _scopedRetrieve($class, $id, $apiKey=null)

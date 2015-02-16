@@ -1,8 +1,4 @@
-<?php
-
-if (!defined('EVENT_ESPRESSO_VERSION')) {
-	exit('No direct script access allowed');
-}
+<?php if ( ! defined('EVENT_ESPRESSO_VERSION') ) { exit('No direct script access allowed'); }
 
 /**
  *
@@ -17,6 +13,10 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  * @author			Event Espresso
  *
  */
+
+use EEA_Stripe\Stripe;
+use EEA_Stripe\Stripe_Charge;
+
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
 	protected $_publishable_key = NULL;
@@ -36,7 +36,6 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	);
 
 
-
 	/**
 	 *
 	 * @param EEI_Payment $payment
@@ -44,12 +43,13 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * @return \EE_Payment|\EEI_Payment
 	 */
 	public function do_direct_payment($payment, $billing_info = null) {
+		global $wpdb; $wpdb->insert('wp_temp_for_tests', array('tests_text_1'=>'do_direct_payment', 'tests_text_2'=>serialize($payment)), array('%s', '%s'));
 		// Set your secret key.
 		Stripe::setApiKey( $this->_stripe_secret_key );
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
 			Stripe_Charge::create( array(
-				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2)),
+				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
 				'currency' => $payment->currency_code(),
 				'card' => $billing_info['ee_stripe_token'],
 				'description' => $billing_info['ee_stripe_prod_description']
