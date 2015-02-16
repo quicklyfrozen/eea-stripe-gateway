@@ -28,13 +28,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * as contained in the esp_currency table
 	 * @var array
 	 */
-	protected $_currencies_supported = array(
-		'USD',
-		'GBP',
-		'CAD',
-		'AUD'
-	);
-
+	protected $_currencies_supported = EE_Gateway::all_currencies_supported;
 
 
 	/**
