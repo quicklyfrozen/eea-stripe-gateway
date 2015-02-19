@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 abstract class Stripe_SingletonApiResource extends Stripe_ApiResource
 {
   protected static function _scopedSingletonRetrieve($class, $apiKey=null)

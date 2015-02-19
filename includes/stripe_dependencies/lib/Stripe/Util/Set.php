@@ -1,6 +1,8 @@
 <?php
 
-class Stripe_Util_Set implements IteratorAggregate
+namespace EEA_Stripe;
+
+class Stripe_Util_Set implements \IteratorAggregate
 {
     private $_elts;
 

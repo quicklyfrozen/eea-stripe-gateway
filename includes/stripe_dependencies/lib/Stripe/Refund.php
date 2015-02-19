@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 class Stripe_Refund extends Stripe_ApiResource
 {
   /**

@@ -1,5 +1,7 @@
 <?php
 
+namespace EEA_Stripe;
+
 class Stripe_Subscription extends Stripe_ApiResource
 {
   /**

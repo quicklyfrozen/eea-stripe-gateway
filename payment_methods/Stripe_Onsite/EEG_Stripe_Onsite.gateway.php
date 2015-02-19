@@ -1,8 +1,4 @@
-<?php
-
-if (!defined('EVENT_ESPRESSO_VERSION')) {
-	exit('No direct script access allowed');
-}
+<?php if ( ! defined('EVENT_ESPRESSO_VERSION') ) { exit('No direct script access allowed'); }
 
 /**
  *
@@ -17,6 +13,10 @@ if (!defined('EVENT_ESPRESSO_VERSION')) {
  * @author			Event Espresso
  *
  */
+
+use EEA_Stripe\Stripe;
+use EEA_Stripe\Stripe_Charge;
+
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
 	protected $_publishable_key = NULL;
@@ -28,14 +28,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * as contained in the esp_currency table
 	 * @var array
 	 */
-	protected $_currencies_supported = array(
-		'USD',
-		'GBP',
-		'CAD',
-		'AUD'
-	);
-
-
+	protected $_currencies_supported = EE_Gateway::all_currencies_supported;
 
 	/**
 	 *
@@ -49,7 +42,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
 			Stripe_Charge::create( array(
-				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2)),
+				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
 				'currency' => $payment->currency_code(),
 				'card' => $billing_info['ee_stripe_token'],
 				'description' => $billing_info['ee_stripe_prod_description']
@@ -57,9 +50,20 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 		} catch ( Stripe_CardError $e ) {
 			$payment->set_status($this->_pay_model->failed_status());
 			$payment->set_gateway_response($e->getMessage());
+
+			$e_json = $e->getJsonBody();
+			$error = $e_json['error'];
+			$this->log( $error['message'], $payment );
+			return $payment;
+		} catch ( Stripe_Error $e ) {
+			$payment->set_status($this->_pay_model->failed_status());
+			$payment->set_gateway_response($e->getMessage());
+
+			$this->log( $e->getMessage(), $payment );
 			return $payment;
 		}
-		//$this->log( $billing_info, $payment );
+		
+		$this->log( $billing_info, $payment );
 		$payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}
