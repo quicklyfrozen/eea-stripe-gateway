@@ -211,7 +211,7 @@ class Stripe_ApiRequestor
   {
     try {
       $resp = json_decode($rbody, true);
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $msg = "Invalid response body from API: $rbody "
            . "(HTTP response code was $rcode)";
       throw new Stripe_ApiError($msg, $rcode, $rbody);
