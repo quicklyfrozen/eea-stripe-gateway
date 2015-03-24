@@ -7,12 +7,12 @@
 <h3><?php _e('Stripe Settings', 'event_espresso'); ?></h3>
 <ul>
 <li>
-<?php _e('<strong>Stripe Publishable Key</strong>', 'event_espresso'); ?><br />
+<strong><?php _e('Stripe Publishable Key', 'event_espresso'); ?></strong><br />
 <?php _e('Enter your Stripe publishable API key (test or live). You can get all your keys from <a href="http://dashboard.stripe.com/account/apikeys">your account page</a>, 
 	or find out about <a href="http://stripe.com/docs/tutorials/dashboard#livemode-and-testing">livemode and testing</a>.', 'event_espresso'); ?>
 </li>
 <li>
-<?php _e('<strong>Stripe Secret Key</strong>', 'event_espresso'); ?><br />
+<strong><?php _e('Stripe Secret Key', 'event_espresso'); ?></strong><br />
 <?php _e('Enter your Stripe Secret API key (test or live). This will authenticate you to Stripe, and it\'s separate from your publishable key — keep it secret and keep it safe.', 'event_espresso'); ?>
 </li>
 </ul>
