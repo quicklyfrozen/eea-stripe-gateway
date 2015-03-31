@@ -84,6 +84,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
+		// If this is a partial payment..
+		$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
+		$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+		$owning = $total - $paid;
+		$amount = ( $owning > 0 ) ? $owning : $total;
+
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
 			array(
@@ -112,7 +118,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						array(
 							'html_id' => 'ee-stripe-transaction-total',
 							'html_name' => 'eeTransactionTotal',
-							'default' => EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100,
+							'default' => $amount,
 							'validation_strategies' => array( new EE_Float_Validation_Strategy() )
 						)
 					),
