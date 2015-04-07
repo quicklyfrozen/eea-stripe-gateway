@@ -18,7 +18,8 @@ jQuery(document).ready(function($) {
 		 *     stripe_response: object,
 		 *     offset_from_top_modifier: number,
 		 *     notification: string,
-		 *     initialized: boolean
+		 *     initialized: boolean,
+	 	 *     txn_data: array
 	 * }}
 	 * @namespace StripeCheckout
 	 * @type {{
@@ -63,6 +64,7 @@ jQuery(document).ready(function($) {
 		offset_from_top_modifier : -400,
 		notification : '',
 		initialized : false,
+		txn_data : {},
 
 
 
@@ -98,6 +100,7 @@ jQuery(document).ready(function($) {
 			EE_STRIPE.set_listener_for_payment_method_selector();
 			EE_STRIPE.set_listener_for_submit_payment_button();
 			EE_STRIPE.set_listener_for_leave_page();
+			EE_STRIPE.get_transaction_data();
 			//alert('EE_STRIPE.initialized');
 			EE_STRIPE.initialized = true;
 		},
@@ -118,6 +121,45 @@ jQuery(document).ready(function($) {
 			EE_STRIPE.transaction_total = $('#ee-stripe-transaction-total');
 			EE_STRIPE.product_description = $('#ee-stripe-prod-description');
 			EE_STRIPE.stripe_response = $('#ee-stripe-response-pg');
+		},
+
+
+		/**
+		 * @function get_transaction_data
+		 */
+		get_transaction_data : function() {
+			var req_data = {};
+			req_data.step = 'payment_options';
+			req_data.action = 'get_transaction_details_for_gateways';
+			req_data.selected_method_of_payment = 'stripe_onsite';
+			req_data.generate_reg_form = false;
+			req_data.process_form_submission = false;
+			req_data.noheader = true;
+			req_data.ee_front_ajax = true;
+			req_data.EESID = eei18n.EESID;
+			req_data.revisit = eei18n.revisit;
+			req_data.e_reg_url_link = eei18n.e_reg_url_link;
+
+			$.ajax( {
+				type : "POST",
+				url : eei18n.ajax_url,
+				data : req_data,
+				dataType : "json",
+
+				beforeSend : function() {
+					SPCO.do_before_sending_ajax();
+					EE_STRIPE.submit_payment_button.prop('disabled', true ).addClass('spco-disabled-submit-btn');
+				},
+				success : function( response ) {
+					EE_STRIPE.txn_data = response;
+					EE_STRIPE.submit_payment_button.prop('disabled', false ).removeClass('spco-disabled-submit-btn');
+					SPCO.end_ajax();
+				},
+				error : function() {
+					SPCO.end_ajax();
+					return SPCO.submit_reg_form_server_error();
+				}
+			});
 		},
 
 
@@ -274,12 +316,15 @@ jQuery(document).ready(function($) {
 				e.preventDefault();
 				//e.stopPropagation();
 				SPCO.hide_notices();
+
+				var amount = EE_STRIPE.txn_data['TXN_total'];
+				amount = amount.toString().replace('.' , '').replace(',' , '');
 				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
 				EE_STRIPE.handler.open({
 					name: transaction_args.data_name,
 					image: transaction_args.data_image,
 					description: EE_STRIPE.product_description.val(),
-					amount: EE_STRIPE.transaction_total.val(),
+					amount: amount,	//EE_STRIPE.transaction_total.val(),
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
 					panelLabel: transaction_args.data_panel_label
