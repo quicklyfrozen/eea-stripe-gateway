@@ -39,24 +39,26 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	public function do_direct_payment($payment, $billing_info = null) {
 		// Set your secret key.
 		Stripe::setApiKey( $this->_stripe_secret_key );
+		$stripe_data = array(
+			'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
+			'currency' => $payment->currency_code(),
+			'card' => $billing_info['ee_stripe_token'],
+			'description' => $billing_info['ee_stripe_prod_description']
+		);
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
-			$this->log( $billing_info, $payment );
-			Stripe_Charge::create( array(
-				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
-				'currency' => $payment->currency_code(),
-				'card' => $billing_info['ee_stripe_token'],
-				'description' => $billing_info['ee_stripe_prod_description']
-			));
+			$this->log( array( 'Stripe Request data:' => $stripe_data ), $payment );
+			$charge = Stripe_Charge::create( $stripe_data );
+			$this->log( array( 'Stripe charge:' => $charge ), $payment );
 		} catch ( Stripe_CardError $error ) {
 			$payment->set_status( $this->_pay_model->declined_status() );
 			$payment->set_gateway_response( $error->getMessage() );
-			$this->log( $error, $payment );
+			$this->log( array('Stripe Error occurred:' => $error), $payment );
 			return $payment;
 		} catch ( Exception $exception ) {
 			$payment->set_status( $this->_pay_model->failed_status() );
 			$payment->set_gateway_response( $exception->getMessage() );
-			$this->log( $exception, $payment );
+			$this->log( array('Stripe Error occurred:' => $exception), $payment );
 			return $payment;
 		}
 
