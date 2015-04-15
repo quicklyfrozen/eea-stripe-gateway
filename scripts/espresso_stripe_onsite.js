@@ -244,8 +244,8 @@ jQuery(document).ready(function($) {
 		 * @function set_listener_for_payment_method_selector
 		 */
 		set_listener_for_payment_method_selector : function() {
-			SPCO.main_container.on( 'click', '.spco-payment-method', function() {
-			//SPCO.main_container.on( 'click', '.spco-next-step-btn', function() {
+			//SPCO.main_container.on( 'click', '.spco-payment-method', function() {
+			SPCO.main_container.on( 'click', '.spco-next-step-btn', function() {
 				EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
 			});
 		},
