@@ -18,7 +18,8 @@ jQuery(document).ready(function($) {
 		 *     stripe_response: object,
 		 *     offset_from_top_modifier: number,
 		 *     notification: string,
-		 *     initialized: boolean
+		 *     initialized: boolean,
+		 *     selected: boolean
 	 * }}
 	 * @namespace StripeCheckout
 	 * @type {{
@@ -63,6 +64,7 @@ jQuery(document).ready(function($) {
 		offset_from_top_modifier : -400,
 		notification : '',
 		initialized : false,
+		selected : false,
 
 
 
@@ -258,7 +260,7 @@ jQuery(document).ready(function($) {
 		 */
 		disable_SPCO_submit_buttons_if_Stripe_selected : function() {
 			console.log( JSON.stringify( '**EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected**', null, 4 ) );
-			if ( EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
+			if ( EE_STRIPE.selected && EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
 				SPCO.allow_enable_submit_buttons = false;
 				console.log( JSON.stringify( 'EE_STRIPE >> disable_submit_buttons', null, 4 ) );
 				SPCO.disable_submit_buttons();
@@ -350,7 +352,10 @@ jQuery(document).ready(function($) {
 	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
 		//SPCO.console_log( 'payment_method', payment_method, false );
 		if ( typeof payment_method !== 'undefined' && payment_method === 'stripe_onsite' ) {
+			EE_STRIPE.selected = true;
 			EE_STRIPE.initialize();
+		} else {
+			EE_STRIPE.selected = false;
 		}
 	});
 
