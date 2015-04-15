@@ -96,6 +96,7 @@ jQuery(document).ready(function($) {
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				return;
 			}
+			EE_STRIPE.selected = true;
 			EE_STRIPE.set_up_handler();
 			EE_STRIPE.set_listener_for_payment_method_selector();
 			EE_STRIPE.set_listener_for_submit_payment_button();
@@ -259,10 +260,10 @@ jQuery(document).ready(function($) {
 		 * Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
 		 */
 		disable_SPCO_submit_buttons_if_Stripe_selected : function() {
-			console.log( JSON.stringify( '**EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected**', null, 4 ) );
+			//console.log( JSON.stringify( '**EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected**', null, 4 ) );
 			if ( EE_STRIPE.selected && EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
 				SPCO.allow_enable_submit_buttons = false;
-				console.log( JSON.stringify( 'EE_STRIPE >> disable_submit_buttons', null, 4 ) );
+				//console.log( JSON.stringify( 'EE_STRIPE >> disable_submit_buttons', null, 4 ) );
 				SPCO.disable_submit_buttons();
 			}
 		},
