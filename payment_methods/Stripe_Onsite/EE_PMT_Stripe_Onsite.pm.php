@@ -63,7 +63,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'stripe_secret_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() ),
 					'required' => true
-				))
+				)),
+				'validate_zip' => new EE_Yes_No_Input(
+					array(
+						'html_label_text'=> sprintf( __("Validate the billing ZIP code? %s", 'event_espresso'),  $this->get_help_tab_link() ),
+						'html_help_text'=> __("Send Test transactions, even to live server.", 'event_espresso'),
+						'default' => true,
+						'required' => true
+					)
+				)
 			)
 		));
 	}
@@ -193,6 +201,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
 			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
 			'data_image' => EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
+			'validate_zip' => $this->_pm_instance->get_extra_meta( 'validate_zip', TRUE ) ? 'true' : 'false',
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
 			'accepted_message' => __( 'Payment Accepted. Click "Finalize Registration" to proceed.', 'event_espresso' ),

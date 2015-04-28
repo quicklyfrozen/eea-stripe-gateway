@@ -282,7 +282,8 @@ jQuery(document).ready(function($) {
 					amount: EE_STRIPE.transaction_total.val(),
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
-					panelLabel: transaction_args.data_panel_label
+					panelLabel: transaction_args.data_panel_label,
+					zipCode : transaction_args.validate_zip
 				});
 			});
 		},
