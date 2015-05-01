@@ -85,7 +85,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			}
 		}
 		if ( isset( $extra_args['amount_owing' ] )) {
-			$amount = $extra_args[ 'amount_owing' ];
+			$amount = $extra_args[ 'amount_owing' ] * 100;
 		} else {
 			// If this is a partial payment..
 			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
