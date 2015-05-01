@@ -74,7 +74,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @param \EE_Transaction $transaction
 	 * @return \EE_Billing_Info_Form
 	 */
-	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
+	public function generate_new_billing_form( EE_Transaction $transaction = NULL, $extra_args = array() ) {
 		EE_Registry::instance()->load_helper( 'Money' );
 		$event = '';
 		$email = '';
@@ -84,11 +84,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
-		// If this is a partial payment..
-		$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
-		$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
-		$owning = $total - $paid;
-		$amount = ( $owning > 0 ) ? $owning : $total;
+		if ( isset( $extra_args['amount_owing' ] )) {
+			$amount = $extra_args[ 'amount_owing' ];
+		} else {
+			// If this is a partial payment..
+			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
+			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+			$owning = $total - $paid;
+			$amount = ( $owning > 0 ) ? $owning : $total;
+		}
 
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
