@@ -165,6 +165,10 @@ jQuery(document).ready(function($) {
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
 				EE_STRIPE.notification =SPCO.generate_message_object( transaction_args.accepted_message, '', '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
+				//  hide any return to cart buttons, etc
+				$( '.hide-me-after-successful-payment-js' ).hide();
+				// trigger click event on SPCO "Proceed to Next Step" button
+				EE_STRIPE.submit_payment_button.parents( 'form:first' ).find( '.spco-next-step-btn' ).trigger( 'click' );
 			}
 		},
 
