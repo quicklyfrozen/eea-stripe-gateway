@@ -74,13 +74,6 @@ jQuery(document).ready(function($) {
 		initialize : function() {
 
 			EE_STRIPE.initialize_objects();
-			EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
-
-			// has the Stripe gateway has been selected ? or already initialized?
-			if ( ! EE_STRIPE.submit_payment_button.length || EE_STRIPE.initialized ) {
-				//SPCO.console_log( 'initialize', 'already initialized!', true );
-				return;
-			}
 			// ensure that the SPCO js class is loaded
 			if ( typeof SPCO === 'undefined' ) {
 				//console.log( JSON.JSON.stringify( 'initialize: ' + 'no SPCO !!!', null, 4 ) );
@@ -97,11 +90,17 @@ jQuery(document).ready(function($) {
 				return;
 			}
 			EE_STRIPE.selected = true;
+			EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
+
+			// has the Stripe gateway has been selected ? or already initialized?
+			if ( ! EE_STRIPE.submit_payment_button.length || EE_STRIPE.initialized ) {
+				//SPCO.console_log( 'initialize', 'already initialized!', true );
+				return;
+			}
 			EE_STRIPE.set_up_handler();
 			EE_STRIPE.set_listener_for_payment_method_selector();
 			EE_STRIPE.set_listener_for_submit_payment_button();
 			EE_STRIPE.set_listener_for_leave_page();
-			//alert('EE_STRIPE.initialized');
 			EE_STRIPE.initialized = true;
 		},
 
