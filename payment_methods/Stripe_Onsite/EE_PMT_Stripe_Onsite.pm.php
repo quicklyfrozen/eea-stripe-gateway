@@ -82,7 +82,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @param \EE_Transaction $transaction
 	 * @return \EE_Billing_Info_Form
 	 */
-	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
+	public function generate_new_billing_form( EE_Transaction $transaction = NULL, $extra_args = array() ) {
 		EE_Registry::instance()->load_helper( 'Money' );
 		$event = '';
 		$email = '';
@@ -92,11 +92,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
-		// If this is a partial payment..
-		$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
-		$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
-		$owning = $total - $paid;
-		$amount = ( $owning > 0 ) ? $owning : $total;
+		if ( isset( $extra_args['amount_owing' ] )) {
+			$amount = $extra_args[ 'amount_owing' ] * 100;
+		} else {
+			// If this is a partial payment..
+			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
+			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+			$owning = $total - $paid;
+			$amount = ( $owning > 0 ) ? $owning : $total;
+		}
 
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
@@ -204,7 +208,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'validate_zip' => $this->_pm_instance->get_extra_meta( 'validate_zip', TRUE ) ? 'true' : 'false',
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
-			'accepted_message' => __( 'Payment Accepted. Click "Finalize Registration" to proceed.', 'event_espresso' ),
+			'accepted_message' => __( 'Payment Accepted. Please click "Proceed to Finalize Registration" if not forwarded automatically.', 'event_espresso' ),
 			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
