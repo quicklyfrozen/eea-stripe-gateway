@@ -67,7 +67,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'validate_zip' => new EE_Yes_No_Input(
 					array(
 						'html_label_text'=> sprintf( __("Validate the billing ZIP code? %s", 'event_espresso'),  $this->get_help_tab_link() ),
-						'html_help_text'=> __("Send Test transactions, even to live server.", 'event_espresso'),
 						'default' => true,
 						'required' => true
 					)
