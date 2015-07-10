@@ -99,6 +99,7 @@ jQuery(document).ready(function($) {
 			}
 			EE_STRIPE.set_up_handler();
 			EE_STRIPE.set_listener_for_payment_method_selector();
+			EE_STRIPE.set_listener_for_payment_amount_change();
 			EE_STRIPE.set_listener_for_submit_payment_button();
 			EE_STRIPE.set_listener_for_leave_page();
 			EE_STRIPE.initialized = true;
@@ -250,9 +251,22 @@ jQuery(document).ready(function($) {
 		 * @function set_listener_for_payment_method_selector
 		 */
 		set_listener_for_payment_method_selector : function() {
-			//SPCO.main_container.on( 'click', '.spco-payment-method', function() {
 			SPCO.main_container.on( 'click', '.spco-next-step-btn', function() {
 				EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
+			});
+		},
+
+
+
+		/**
+		 * @function set_listener_for_payment_amount_change
+		 */
+		set_listener_for_payment_amount_change : function() {
+			//console.log( JSON.stringify( '**EE_STRIPE.set_listener_for_payment_amount_change**', null, 4 ) );
+			SPCO.main_container.on( 'spco_payment_amount', function( event, payment_amount ) {
+				EE_STRIPE.transaction_total.val( payment_amount * 100 );
+				//console.log( JSON.stringify( 'payment_amount: ' + payment_amount, null, 4 ) );
+				//console.log( JSON.stringify( 'EE_STRIPE.transaction_total.val(): ' + EE_STRIPE.transaction_total.val(), null, 4 ) );
 			});
 		},
 
