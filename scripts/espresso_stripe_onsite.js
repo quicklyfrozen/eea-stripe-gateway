@@ -138,10 +138,13 @@ jQuery(document).ready(function($) {
 					if ( typeof stripe_token.error !== 'undefined' && stripe_token.error ) {
 						EE_STRIPE.checkout_error( stripe_token );
 					} else {
-						EE_STRIPE.checkout_success( stripe_token );
-					}
-					if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name  !== 'undefined' ) {
-						EE_STRIPE.save_card_details( stripe_token.card );
+						if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name !== 'undefined' ) {
+							if ( EE_STRIPE.save_card_details( stripe_token.card )) {
+								EE_STRIPE.checkout_success( stripe_token );
+							}
+						} else {
+							EE_STRIPE.checkout_success( stripe_token );
+						}
 					}
 				}
 			});
@@ -196,7 +199,7 @@ jQuery(document).ready(function($) {
 		 */
 		save_card_details : function( card_info ) {
 
-			//SPCO.console_log_object( 'card_info', card_info, 0 );
+			//console.log( JSON.stringify( 'save_card_details', null, 4 ) );
 
 			var data={};
 			data.action = 'save_payer_details';
@@ -240,6 +243,12 @@ jQuery(document).ready(function($) {
 						EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'Stripe save_card_details error', response.errors ), '' );
 						SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 					}
+					// return true regardless of what happens
+					return true;
+				},
+				error : function() {
+					// did we mention to return true regardless of what happens ?
+					return true;
 				}
 			});
 
