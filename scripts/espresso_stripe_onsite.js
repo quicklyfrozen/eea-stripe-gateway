@@ -138,10 +138,10 @@ jQuery(document).ready(function($) {
 					if ( typeof stripe_token.error !== 'undefined' && stripe_token.error ) {
 						EE_STRIPE.checkout_error( stripe_token );
 					} else {
+						//console.log( JSON.stringify( 'stripe_token.card: ' + stripe_token.card, null, 4 ) );
+						//console.log( JSON.stringify( 'stripe_token.name: ' + stripe_token.name, null, 4 ) );
 						if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name !== 'undefined' ) {
-							if ( EE_STRIPE.save_card_details( stripe_token.card )) {
-								EE_STRIPE.checkout_success( stripe_token );
-							}
+							EE_STRIPE.save_card_details( stripe_token );
 						} else {
 							EE_STRIPE.checkout_success( stripe_token );
 						}
@@ -157,7 +157,7 @@ jQuery(document).ready(function($) {
 		 * @param  {object} stripe_token
 		 */
 		checkout_success : function( stripe_token ) {
-			//SPCO.console_log( 'initialize', 'checkout_success', true );
+			//console.log( JSON.stringify( 'checkout_success', null, 4 ) );
 			// Enable SPCO submit buttons.
 			SPCO.enable_submit_buttons();
 			if ( typeof stripe_token.used !== 'undefined' && ! stripe_token.used ) {
@@ -195,11 +195,13 @@ jQuery(document).ready(function($) {
 
 		/**
 		 * @function save_email_address
-		 * @param  {object} card_info
+		 * @param  {object} stripe_token
 		 */
-		save_card_details : function( card_info ) {
+		save_card_details : function( stripe_token ) {
 
 			//console.log( JSON.stringify( 'save_card_details', null, 4 ) );
+
+			var card_info = stripe_token.card;
 
 			var data={};
 			data.action = 'save_payer_details';
@@ -243,12 +245,12 @@ jQuery(document).ready(function($) {
 						EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'Stripe save_card_details error', response.errors ), '' );
 						SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 					}
-					// return true regardless of what happens
-					return true;
+					// continue with checkout regardless of what happens
+					EE_STRIPE.checkout_success( stripe_token );
 				},
 				error : function() {
-					// did we mention to return true regardless of what happens ?
-					return true;
+					// did we mention to continue with checkout regardless of what happens ?
+					EE_STRIPE.checkout_success( stripe_token );
 				}
 			});
 
