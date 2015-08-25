@@ -316,7 +316,8 @@ jQuery(document).ready(function($) {
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
 					panelLabel: transaction_args.data_panel_label,
-					zipCode : transaction_args.validate_zip
+					zipCode : transaction_args.validate_zip,
+					billingAddress : transaction_args.billing_address
 				});
 			});
 		},

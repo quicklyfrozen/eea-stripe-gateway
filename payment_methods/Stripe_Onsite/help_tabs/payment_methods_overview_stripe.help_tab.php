@@ -19,4 +19,8 @@
 		<strong><?php _e('Validate the billing ZIP code', 'event_espresso'); ?></strong><br />
 		<?php _e('Specify if the billing ZIP code should be validated on the checkout.', 'event_espresso'); ?>
 	</li>
+	<li>
+		<strong><?php _e('Collect the user\'s billing address', 'event_espresso'); ?></strong><br />
+		<?php _e('Specify whether Checkout should collect the user\'s billing address.', 'event_espresso'); ?>
+	</li>
 </ul>
