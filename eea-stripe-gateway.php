@@ -42,12 +42,31 @@ define( 'EE_STRIPE_VERSION', '1.0.9.rc.001' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
 
 function load_espresso_stripe() {
-  if ( class_exists( 'EE_Addon' ) ) {
-  	require_once ( plugin_dir_path( __FILE__ ) . 'EE_Stripe_Gateway.class.php' );
-  	EE_Stripe_Gateway::register_addon();
+  if ( class_exists( 'EE_Addon' ) && extension_loaded('mbstring') && function_exists('json_decode') && function_exists('curl_init') ) {
+    require_once ( plugin_dir_path( __FILE__ ) . 'EE_Stripe_Gateway.class.php' );
+    EE_Stripe_Gateway::register_addon();
   }
 }
 add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_stripe' );
+
+
+
+// Check for extensions needed by Stripe.
+function espresso_stripe_check_for_components() {
+  if ( ! extension_loaded('mbstring') || ! function_exists('json_decode') && ! function_exists('curl_init') ) {
+    deactivate_plugins( plugin_basename( EE_STRIPE_PLUGIN_FILE ) );
+    add_action( 'admin_notices', 'espresso_stripe_gw_disable_notice' );
+
+    if ( isset( $_GET['activate'] ) ) {
+      unset( $_GET['activate'] );
+    }
+  }
+}
+add_action( 'admin_init', 'espresso_stripe_check_for_components' );
+
+function espresso_stripe_gw_disable_notice() {
+    echo '<div class="error"><p>' . sprintf(__( 'The %s Stripe Gateway %s plugin was Deactivated ! Plugin requires the %s Multibyte String, JSON and CURL PHP %s extensions.' , 'event_espresso' ), '<strong>', '</strong>', '<strong>', '</strong>') . '</p></div>';
+}
 
 
 // End of file espresso_new_payment_method.php
