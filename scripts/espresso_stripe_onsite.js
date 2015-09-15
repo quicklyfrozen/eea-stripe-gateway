@@ -74,13 +74,6 @@ jQuery(document).ready(function($) {
 		initialize : function() {
 
 			EE_STRIPE.initialize_objects();
-			EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
-
-			// has the Stripe gateway has been selected ? or already initialized?
-			if ( ! EE_STRIPE.submit_payment_button.length || EE_STRIPE.initialized ) {
-				//SPCO.console_log( 'initialize', 'already initialized!', true );
-				return;
-			}
 			// ensure that the SPCO js class is loaded
 			if ( typeof SPCO === 'undefined' ) {
 				//console.log( JSON.JSON.stringify( 'initialize: ' + 'no SPCO !!!', null, 4 ) );
@@ -96,8 +89,17 @@ jQuery(document).ready(function($) {
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				return;
 			}
+			EE_STRIPE.selected = true;
+			EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
+
+			// has the Stripe gateway has been selected ? or already initialized?
+			if ( ! EE_STRIPE.submit_payment_button.length || EE_STRIPE.initialized ) {
+				//SPCO.console_log( 'initialize', 'already initialized!', true );
+				return;
+			}
 			EE_STRIPE.set_up_handler();
 			EE_STRIPE.set_listener_for_payment_method_selector();
+			EE_STRIPE.set_listener_for_payment_amount_change();
 			EE_STRIPE.set_listener_for_submit_payment_button();
 			EE_STRIPE.set_listener_for_leave_page();
 			EE_STRIPE.get_transaction_data();
@@ -111,7 +113,7 @@ jQuery(document).ready(function($) {
 		 * @function set_up_handler
 		 */
 		initialize_objects : function() {
-			//SPCO.console_log( 'initialize', 'initialize_objects', true );
+			//console.log( JSON.stringify( '**EE_STRIPE.initialize_objects**', null, 4 ) );
 			EE_STRIPE.submit_payment_button = $( EE_STRIPE.submit_button_id );
 			EE_STRIPE.payment_method_selector = $('#ee-available-payment-method-inputs-stripe_onsite-lbl');
 			EE_STRIPE.payment_method_info_div = $('#spco-payment-method-info-stripe_onsite');
@@ -177,10 +179,13 @@ jQuery(document).ready(function($) {
 					if ( typeof stripe_token.error !== 'undefined' && stripe_token.error ) {
 						EE_STRIPE.checkout_error( stripe_token );
 					} else {
-						EE_STRIPE.checkout_success( stripe_token );
-					}
-					if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name  !== 'undefined' ) {
-						EE_STRIPE.save_card_details( stripe_token.card );
+						//console.log( JSON.stringify( 'stripe_token.card: ' + stripe_token.card, null, 4 ) );
+						//console.log( JSON.stringify( 'stripe_token.name: ' + stripe_token.name, null, 4 ) );
+						if ( typeof stripe_token.card !== 'undefined' && stripe_token.card.name !== 'undefined' ) {
+							EE_STRIPE.save_card_details( stripe_token );
+						} else {
+							EE_STRIPE.checkout_success( stripe_token );
+						}
 					}
 				}
 			});
@@ -193,7 +198,7 @@ jQuery(document).ready(function($) {
 		 * @param  {object} stripe_token
 		 */
 		checkout_success : function( stripe_token ) {
-			//SPCO.console_log( 'initialize', 'checkout_success', true );
+			//console.log( JSON.stringify( 'checkout_success', null, 4 ) );
 			// Enable SPCO submit buttons.
 			SPCO.enable_submit_buttons();
 			if ( typeof stripe_token.used !== 'undefined' && ! stripe_token.used ) {
@@ -204,6 +209,10 @@ jQuery(document).ready(function($) {
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
 				EE_STRIPE.notification =SPCO.generate_message_object( transaction_args.accepted_message, '', '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
+				//  hide any return to cart buttons, etc
+				$( '.hide-me-after-successful-payment-js' ).hide();
+				// trigger click event on SPCO "Proceed to Next Step" button
+				EE_STRIPE.submit_payment_button.parents( 'form:first' ).find( '.spco-next-step-btn' ).trigger( 'click' );
 			}
 		},
 
@@ -227,11 +236,13 @@ jQuery(document).ready(function($) {
 
 		/**
 		 * @function save_email_address
-		 * @param  {object} card_info
+		 * @param  {object} stripe_token
 		 */
-		save_card_details : function( card_info ) {
+		save_card_details : function( stripe_token ) {
 
-			//SPCO.console_log_object( 'card_info', card_info, 0 );
+			//console.log( JSON.stringify( 'save_card_details', null, 4 ) );
+
+			var card_info = stripe_token.card;
 
 			var data={};
 			data.action = 'save_payer_details';
@@ -275,6 +286,12 @@ jQuery(document).ready(function($) {
 						EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'Stripe save_card_details error', response.errors ), '' );
 						SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 					}
+					// continue with checkout regardless of what happens
+					EE_STRIPE.checkout_success( stripe_token );
+				},
+				error : function() {
+					// did we mention to continue with checkout regardless of what happens ?
+					EE_STRIPE.checkout_success( stripe_token );
 				}
 			});
 
@@ -286,9 +303,22 @@ jQuery(document).ready(function($) {
 		 * @function set_listener_for_payment_method_selector
 		 */
 		set_listener_for_payment_method_selector : function() {
-			//SPCO.main_container.on( 'click', '.spco-payment-method', function() {
 			SPCO.main_container.on( 'click', '.spco-next-step-btn', function() {
 				EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected();
+			});
+		},
+
+
+
+		/**
+		 * @function set_listener_for_payment_amount_change
+		 */
+		set_listener_for_payment_amount_change : function() {
+			//console.log( JSON.stringify( '**EE_STRIPE.set_listener_for_payment_amount_change**', null, 4 ) );
+			SPCO.main_container.on( 'spco_payment_amount', function( event, payment_amount ) {
+				EE_STRIPE.transaction_total.val( payment_amount * 100 );
+				//console.log( JSON.stringify( 'payment_amount: ' + payment_amount, null, 4 ) );
+				//console.log( JSON.stringify( 'EE_STRIPE.transaction_total.val(): ' + EE_STRIPE.transaction_total.val(), null, 4 ) );
 			});
 		},
 
@@ -299,8 +329,10 @@ jQuery(document).ready(function($) {
 		 * Deactivate SPCO submit buttons to prevent submitting with no Stripe token.
 		 */
 		disable_SPCO_submit_buttons_if_Stripe_selected : function() {
-			if ( EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
+			//console.log( JSON.stringify( '**EE_STRIPE.disable_SPCO_submit_buttons_if_Stripe_selected**', null, 4 ) );
+			if ( EE_STRIPE.selected && EE_STRIPE.submit_payment_button.length > 0 && EE_STRIPE.submit_payment_button.val().length <= 0 ) {
 				SPCO.allow_enable_submit_buttons = false;
+				//console.log( JSON.stringify( 'EE_STRIPE >> disable_submit_buttons', null, 4 ) );
 				SPCO.disable_submit_buttons();
 			}
 		},
@@ -327,7 +359,9 @@ jQuery(document).ready(function($) {
 					amount: amount,	//EE_STRIPE.transaction_total.val(),
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
-					panelLabel: transaction_args.data_panel_label
+					panelLabel: transaction_args.data_panel_label,
+					zipCode : transaction_args.validate_zip,
+					billingAddress : transaction_args.billing_address
 				});
 			});
 		},
@@ -393,7 +427,10 @@ jQuery(document).ready(function($) {
 	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
 		//SPCO.console_log( 'payment_method', payment_method, false );
 		if ( typeof payment_method !== 'undefined' && payment_method === 'stripe_onsite' ) {
+			EE_STRIPE.selected = true;
 			EE_STRIPE.initialize();
+		} else {
+			EE_STRIPE.selected = false;
 		}
 	});
 

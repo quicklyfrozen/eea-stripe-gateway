@@ -31,7 +31,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$this->_default_description = __( 'Click the "Pay Now" button to proceed with payment.', 'event_espresso' );
 		$this->_template_path = dirname(__FILE__) . DS . 'templates' . DS;
 		$this->_requires_https = FALSE;
-		$this->_has_billing_form = TRUE;
 		$this->_cache_billing_form = FALSE;
 		$this->_default_button_url = EE_STRIPE_URL . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'lib' . DS . 'stripe-cc-logo.png';
 
@@ -63,7 +62,21 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'stripe_secret_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() ),
 					'required' => true
-				))
+				)),
+				'validate_zip' => new EE_Yes_No_Input(
+					array(
+						'html_label_text'=> sprintf( __("Validate the billing ZIP code? %s", 'event_espresso'),  $this->get_help_tab_link() ),
+						'default' => false,
+						'required' => true
+					)
+				),
+				'billing_address' => new EE_Yes_No_Input(
+					array(
+						'html_label_text'=> sprintf( __("Collect the user's billing address? %s", 'event_espresso'),  $this->get_help_tab_link() ),
+						'default' => false,
+						'required' => true
+					)
+				)
 			)
 		));
 	}
@@ -74,7 +87,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @param \EE_Transaction $transaction
 	 * @return \EE_Billing_Info_Form
 	 */
-	public function generate_new_billing_form( EE_Transaction $transaction = NULL ) {
+	public function generate_new_billing_form( EE_Transaction $transaction = NULL, $extra_args = array() ) {
 		EE_Registry::instance()->load_helper( 'Money' );
 		$event = '';
 		$email = '';
@@ -84,11 +97,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
 		}
-		// If this is a partial payment..
-		$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
-		$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
-		$owning = $total - $paid;
-		$amount = ( $owning > 0 ) ? $owning : $total;
+		if ( isset( $extra_args['amount_owing' ] )) {
+			$amount = $extra_args[ 'amount_owing' ] * 100;
+		} else {
+			// If this is a partial payment..
+			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
+			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+			$owning = $total - $paid;
+			$amount = ( $owning > 0 ) ? $owning : $total;
+		}
 
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
@@ -193,9 +210,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
 			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
 			'data_image' => EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
+			//note its expected that we're using string values for 'true' and 'false' here. That's what the Stripe API is working with
+			'validate_zip' => $this->_pm_instance->get_extra_meta( 'validate_zip', true ) ? 'true' : 'false',
+			'billing_address' => $this->_pm_instance->get_extra_meta( 'billing_address', true ) ? 'true' : 'false',
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
-			'accepted_message' => __( 'Payment Accepted. Click "Finalize Registration" to proceed.', 'event_espresso' ),
+			'accepted_message' => __( 'Payment Accepted. Please click "Proceed to Finalize Registration" if not forwarded automatically.', 'event_espresso' ),
 			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
