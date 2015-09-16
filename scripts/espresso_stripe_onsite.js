@@ -19,7 +19,8 @@ jQuery(document).ready(function($) {
 		 *     offset_from_top_modifier: number,
 		 *     notification: string,
 		 *     initialized: boolean,
-		 *     selected: boolean
+		 *     selected: boolean,
+	 	 *     txn_data: array
 	 * }}
 	 * @namespace StripeCheckout
 	 * @type {{
@@ -65,6 +66,7 @@ jQuery(document).ready(function($) {
 		notification : '',
 		initialized : false,
 		selected : false,
+		txn_data : {},
 
 
 
@@ -97,6 +99,7 @@ jQuery(document).ready(function($) {
 				//SPCO.console_log( 'initialize', 'already initialized!', true );
 				return;
 			}
+			EE_STRIPE.get_transaction_data();
 			EE_STRIPE.set_up_handler();
 			EE_STRIPE.set_listener_for_payment_method_selector();
 			EE_STRIPE.set_listener_for_payment_amount_change();
@@ -108,7 +111,7 @@ jQuery(document).ready(function($) {
 
 
 		/**
-		 * @function set_up_handler
+		 * @function initialize_objects
 		 */
 		initialize_objects : function() {
 			//console.log( JSON.stringify( '**EE_STRIPE.initialize_objects**', null, 4 ) );
@@ -121,6 +124,43 @@ jQuery(document).ready(function($) {
 			EE_STRIPE.transaction_total = $('#ee-stripe-transaction-total');
 			EE_STRIPE.product_description = $('#ee-stripe-prod-description');
 			EE_STRIPE.stripe_response = $('#ee-stripe-response-pg');
+		},
+
+
+		/**
+		 * @function get_transaction_data
+		 */
+		get_transaction_data : function() {
+			var req_data = {};
+			req_data.step = 'payment_options';
+			req_data.action = 'get_transaction_details_for_gateways';
+			req_data.selected_method_of_payment = 'stripe_onsite';
+			req_data.generate_reg_form = false;
+			req_data.process_form_submission = false;
+			req_data.noheader = true;
+			req_data.ee_front_ajax = true;
+			req_data.EESID = eei18n.EESID;
+			req_data.revisit = eei18n.revisit;
+			req_data.e_reg_url_link = eei18n.e_reg_url_link;
+
+			$.ajax({
+				type : "POST",
+				url : eei18n.ajax_url,
+				data : req_data,
+				dataType : "json",
+	
+				beforeSend : function() {
+					SPCO.do_before_sending_ajax();
+				},
+				success : function( response ) {
+					EE_STRIPE.txn_data = response;
+					SPCO.end_ajax();
+				},
+				error : function() {
+					SPCO.end_ajax();
+					return SPCO.submit_reg_form_server_error();
+				}
+			});
 		},
 
 
@@ -361,6 +401,27 @@ jQuery(document).ready(function($) {
 			$('#espresso-ajax-loading').fadeOut('fast');
 			// display message
 			espresso_ajax_msg.removeClass('hidden').show().delay( 10000 ).fadeOut();
+			// Log the Error.
+			EE_STRIPE.log_error(msg);
+		},
+
+
+
+		/**
+		 * @function log_error
+		 * @param  {string} msg
+		 */
+		log_error : function( msg ) {
+			$.ajax({
+				type : 'POST',
+				dataType : 'json',
+				url : eei18n.ajax_url,
+				data : {
+					action : 'eea_stripe_log_error',
+					txn_id : EE_STRIPE.txn_data['TXN_ID'],
+					message : msg
+				}
+			});
 		}
 
 

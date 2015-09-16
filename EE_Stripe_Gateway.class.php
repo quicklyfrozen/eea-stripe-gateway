@@ -19,6 +19,9 @@ class EE_Stripe_Gateway extends EE_Addon {
 	 * @return EE_Stripe_Gateway
 	 */
 	function __construct() {
+		// Log Stripe JS errors.
+		add_action( 'wp_ajax_eea_stripe_log_error', array( 'EE_PMT_Stripe_Onsite', 'log_stripe_error' ) );
+		add_action( 'wp_ajax_nopriv_eea_stripe_log_error', array( 'EE_PMT_Stripe_Onsite', 'log_stripe_error' ) );
 	}
 
 
@@ -32,6 +35,11 @@ class EE_Stripe_Gateway extends EE_Addon {
 				'min_core_version' => '4.6.0.dev.000',
 				'main_file_path' => EE_STRIPE_PLUGIN_FILE,
 				'admin_callback' => 'additional_stripe_admin_hooks',
+				// register autoloaders
+				'autoloader_paths' => array(
+					'EE_PMT_Base' => EE_LIBRARIES . 'payment_methods' . DS . 'EE_PMT_Base.lib.php',
+					'EE_PMT_Stripe_Onsite' => EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'EE_PMT_Stripe_Onsite.pm.php',
+				),
 				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
 				'pue_options' => array(
 					'pue_plugin_slug' => 'eea-stripe-gateway',

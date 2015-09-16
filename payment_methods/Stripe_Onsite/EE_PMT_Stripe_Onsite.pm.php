@@ -246,6 +246,20 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			),
 		);
 	}
+
+
+	/**
+	 * Log Stripe TXN Error.
+	 *
+	 * @return void
+	 */
+	public static function log_stripe_error() {
+		if ( isset($_POST['txn_id']) && ! empty($_POST['txn_id']) ) {
+			$stripe_pm = EEM_Payment_method::instance()->get_one_of_type( 'Stripe_Onsite' );
+			$transaction = EEM_Transaction::instance()->get_one_by_ID( $_POST['txn_id'] );
+			$stripe_pm->type_obj()->get_gateway()->log( array('Stripe JS Error (Transaction: ' . $transaction->ID() . ')' => $_POST['message']), $transaction );
+		}
+	}
 }
 
 // End of file EE_PMT_Stripe_Onsite.pm.php
