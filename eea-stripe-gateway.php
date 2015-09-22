@@ -65,7 +65,7 @@ function espresso_stripe_check_for_components() {
 add_action( 'admin_init', 'espresso_stripe_check_for_components' );
 
 function espresso_stripe_gw_disable_notice() {
-    echo '<div class="error"><p>' . sprintf(__( 'The %s Stripe Gateway %s plugin was deactivated! This plugin requires the %s Multibyte String, JSON and CURL PHP % extensions to be active on your server.' , 'event_espresso' ), '<strong>', '</strong>', '<strong>', '</strong>') . '</p></div>';
+    echo '<div class="error"><p>' . sprintf(__( 'The %s Stripe Gateway %s plugin was deactivated! This plugin requires the %s Multibyte String, JSON and CURL PHP %s extensions to be active on your server.' , 'event_espresso' ), '<strong>', '</strong>', '<strong>', '</strong>') . '</p></div>';
 }
 
 
