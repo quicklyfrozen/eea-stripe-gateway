@@ -348,15 +348,12 @@ jQuery(document).ready(function($) {
 				e.preventDefault();
 				//e.stopPropagation();
 				SPCO.hide_notices();
-
-				var amount = EE_STRIPE.txn_data['payment_amount'];
-				amount = amount.toString().replace('.' , '').replace(',' , '');
 				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
 				EE_STRIPE.handler.open({
 					name: transaction_args.data_name,
 					image: transaction_args.data_image,
 					description: EE_STRIPE.product_description.val(),
-					amount: amount,	//EE_STRIPE.transaction_total.val(),
+					amount: parseFloat( EE_STRIPE.txn_data[ 'payment_amount' ] ) * 100,
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
 					panelLabel: transaction_args.data_panel_label,
