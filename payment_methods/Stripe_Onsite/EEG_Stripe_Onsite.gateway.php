@@ -39,31 +39,29 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	public function do_direct_payment($payment, $billing_info = null) {
 		// Set your secret key.
 		Stripe::setApiKey( $this->_stripe_secret_key );
+		$stripe_data = array(
+			'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
+			'currency' => $payment->currency_code(),
+			'card' => $billing_info['ee_stripe_token'],
+			'description' => $billing_info['ee_stripe_prod_description']
+		);
 		// Create the charge on Stripe's servers - this will charge the user's card.
 		try {
-			Stripe_Charge::create( array(
-				'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
-				'currency' => $payment->currency_code(),
-				'card' => $billing_info['ee_stripe_token'],
-				'description' => $billing_info['ee_stripe_prod_description']
-			));
-		} catch ( Stripe_CardError $e ) {
-			$payment->set_status($this->_pay_model->failed_status());
-			$payment->set_gateway_response($e->getMessage());
-
-			$e_json = $e->getJsonBody();
-			$error = $e_json['error'];
-			$this->log( $error['message'], $payment );
+			$this->log( array( 'Stripe Request data:' => $stripe_data ), $payment );
+			$charge = Stripe_Charge::create( $stripe_data );
+			$this->log( array( 'Stripe charge:' => $charge ), $payment );
+		} catch ( Stripe_CardError $error ) {
+			$payment->set_status( $this->_pay_model->declined_status() );
+			$payment->set_gateway_response( $error->getMessage() );
+			$this->log( array('Stripe Error occurred:' => $error), $payment );
 			return $payment;
-		} catch ( Stripe_Error $e ) {
-			$payment->set_status($this->_pay_model->failed_status());
-			$payment->set_gateway_response($e->getMessage());
-
-			$this->log( $e->getMessage(), $payment );
+		} catch ( Exception $exception ) {
+			$payment->set_status( $this->_pay_model->failed_status() );
+			$payment->set_gateway_response( $exception->getMessage() );
+			$this->log( array('Stripe Error occurred:' => $exception), $payment );
 			return $payment;
 		}
-		
-		$this->log( $billing_info, $payment );
+
 		$payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}
