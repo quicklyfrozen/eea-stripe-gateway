@@ -148,7 +148,7 @@ jQuery(document).ready(function($) {
 				url : eei18n.ajax_url,
 				data : req_data,
 				dataType : "json",
-	
+
 				beforeSend : function() {
 					SPCO.do_before_sending_ajax();
 				},
@@ -316,6 +316,7 @@ jQuery(document).ready(function($) {
 			//console.log( JSON.stringify( '**EE_STRIPE.set_listener_for_payment_amount_change**', null, 4 ) );
 			SPCO.main_container.on( 'spco_payment_amount', function( event, payment_amount ) {
 				EE_STRIPE.transaction_total.val( payment_amount * 100 );
+				EE_STRIPE.txn_data[ 'payment_amount' ] = payment_amount;
 				//console.log( JSON.stringify( 'payment_amount: ' + payment_amount, null, 4 ) );
 				//console.log( JSON.stringify( 'EE_STRIPE.transaction_total.val(): ' + EE_STRIPE.transaction_total.val(), null, 4 ) );
 			});
