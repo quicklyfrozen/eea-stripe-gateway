@@ -317,7 +317,7 @@ jQuery(document).ready(function($) {
 				//e.stopPropagation();
 				SPCO.hide_notices();
 
-				var amount = EE_STRIPE.txn_data['TXN_total'];
+				var amount = EE_STRIPE.txn_data['payment_amount'];
 				amount = amount.toString().replace('.' , '').replace(',' , '');
 				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
 				EE_STRIPE.handler.open({
