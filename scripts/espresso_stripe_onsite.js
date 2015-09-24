@@ -105,6 +105,8 @@ jQuery(document).ready(function($) {
 			EE_STRIPE.set_listener_for_payment_amount_change();
 			EE_STRIPE.set_listener_for_submit_payment_button();
 			EE_STRIPE.set_listener_for_leave_page();
+			EE_STRIPE.get_transaction_data();
+			//alert('EE_STRIPE.initialized');
 			EE_STRIPE.initialized = true;
 		},
 
@@ -143,12 +145,12 @@ jQuery(document).ready(function($) {
 			req_data.revisit = eei18n.revisit;
 			req_data.e_reg_url_link = eei18n.e_reg_url_link;
 
-			$.ajax({
+			$.ajax( {
 				type : "POST",
 				url : eei18n.ajax_url,
 				data : req_data,
 				dataType : "json",
-	
+
 				beforeSend : function() {
 					SPCO.do_before_sending_ajax();
 				},
@@ -352,7 +354,7 @@ jQuery(document).ready(function($) {
 					name: transaction_args.data_name,
 					image: transaction_args.data_image,
 					description: EE_STRIPE.product_description.val(),
-					amount: EE_STRIPE.transaction_total.val(),
+					amount: parseFloat( EE_STRIPE.txn_data[ 'payment_amount' ] ) * 100,
 					email: EE_STRIPE.transaction_email.val(),
 					currency: transaction_args.data_currency,
 					panelLabel: transaction_args.data_panel_label,
