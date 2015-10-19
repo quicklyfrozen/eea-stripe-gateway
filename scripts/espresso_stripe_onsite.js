@@ -319,6 +319,7 @@ jQuery(document).ready(function($) {
 				EE_STRIPE.txn_data[ 'payment_amount' ] = payment_amount;
 				//console.log( JSON.stringify( 'payment_amount: ' + payment_amount, null, 4 ) );
 				//console.log( JSON.stringify( 'EE_STRIPE.transaction_total.val(): ' + EE_STRIPE.transaction_total.val(), null, 4 ) );
+				//console.log( JSON.stringify( 'EE_STRIPE.txn_data[payment_amount]: ' + EE_STRIPE.txn_data[ 'payment_amount' ], null, 4 ) );
 			});
 		},
 
