@@ -8,8 +8,7 @@
 <ul>
 	<li>
 		<strong><?php _e('Stripe Publishable Key', 'event_espresso'); ?></strong><br />
-		<?php _e('Enter your Stripe publishable API key (test or live). You can get all your keys from <a href="http://dashboard.stripe.com/account/apikeys">your account page</a>, 
-			or find out about <a href="http://stripe.com/docs/tutorials/dashboard#livemode-and-testing">livemode and testing</a>.', 'event_espresso'); ?>
+		<?php _e('Enter your Stripe publishable API key (test or live). You can get all your keys from <a href="http://dashboard.stripe.com/account/apikeys">your account page</a>, or find out about <a href="http://stripe.com/docs/tutorials/dashboard#livemode-and-testing">livemode and testing</a>.', 'event_espresso'); ?>
 	</li>
 	<li>
 		<strong><?php _e('Stripe Secret Key', 'event_espresso'); ?></strong><br />
