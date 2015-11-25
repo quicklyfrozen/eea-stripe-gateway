@@ -9,7 +9,7 @@
 	<li>
 		<strong><?php _e( 'Stripe Publishable Key', 'event_espresso' ); ?></strong><br />
 		<?php 
-			echo sprintf( __( 'Enter your Stripe publishable API key (test or live). You can get all your keys from %1$syour account page%2$s, or find out about %3$slivemode and testing%4$s.', 'event_espresso' ),
+			printf( __( 'Enter your Stripe publishable API key (test or live). You can get all your keys from %1$syour account page%2$s, or find out about %3$slivemode and testing%4$s.', 'event_espresso' ),
 				'<a href="http://dashboard.stripe.com/account/apikeys">',
 				'</a>',
 				'<a href="http://stripe.com/docs/tutorials/dashboard#livemode-and-testing">',
