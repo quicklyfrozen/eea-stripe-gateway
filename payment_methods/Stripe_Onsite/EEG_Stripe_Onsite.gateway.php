@@ -64,7 +64,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 		$charge_array = $charge->__toArray(true);
 		$this->log( array( 'Stripe charge:' => $charge_array ), $payment );
 		$payment->set_gateway_response( $charge_array['status'] );
-		$payment->set_txn_id_chq_nmbr( $charge_array['balance_transaction'] );
+		$payment->set_txn_id_chq_nmbr( $charge_array['id'] );
 		$payment->set_details( $charge_array );
 		$payment->set_amount( floatval( $charge_array['amount'] / 100 ) );
 		$payment->set_status( $this->_pay_model->approved_status() );
