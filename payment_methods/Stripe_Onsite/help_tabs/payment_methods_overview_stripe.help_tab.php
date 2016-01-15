@@ -1,10 +1,10 @@
-<h3>
+<p><strong>
 	<?php _e( 'Stripe Gateway', 'event_espresso' ); ?>
-</h3>
+</strong></p>
 <p>
 	<?php printf( __( 'Adjust the settings for the Stripe payment gateway. More information can be found on %sStripe.com%s.', 'event_espresso' ), '<a href="http://www.stripe.com/">', '</a>' ); ?>
 </p>
-<h3><?php _e( 'Stripe Settings', 'event_espresso' ); ?></h3>
+<p><strong><?php _e( 'Stripe Settings', 'event_espresso' ); ?></strong></p>
 <ul>
 	<li>
 		<strong><?php _e( 'Stripe Publishable Key', 'event_espresso' ); ?></strong><br />
