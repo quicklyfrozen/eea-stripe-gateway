@@ -136,7 +136,7 @@ jQuery(document).ready(function($) {
 			var req_data = {};
 			req_data.step = 'payment_options';
 			req_data.action = 'get_transaction_details_for_gateways';
-			req_data.selected_method_of_payment = 'stripe_onsite';
+			req_data.selected_method_of_payment = transaction_args.payment_method_slug;
 			req_data.generate_reg_form = false;
 			req_data.process_form_submission = false;
 			req_data.noheader = true;
@@ -447,7 +447,7 @@ jQuery(document).ready(function($) {
 	// also initialize Stripe Checkout if the selected method of payment changes
 	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
 		//SPCO.console_log( 'payment_method', payment_method, false );
-		if ( typeof payment_method !== 'undefined' && payment_method === 'stripe_onsite' ) {
+		if ( typeof payment_method !== 'undefined' && payment_method === transaction_args.payment_method_slug ) {
 			EE_STRIPE.selected = true;
 			EE_STRIPE.initialize();
 		} else {

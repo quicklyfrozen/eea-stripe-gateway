@@ -204,7 +204,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		wp_enqueue_style( 'espresso_stripe_payment_css', EE_STRIPE_URL . 'css' . DS . 'espresso_stripe.css' );
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
-
+		
 		// Data needed in the JS.
 		$trans_args = array(
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
@@ -218,7 +218,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'accepted_message' => __( 'Payment Accepted. Please click "Proceed to Finalize Registration" if not forwarded automatically.', 'event_espresso' ),
 			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
-			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' )
+			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
+			'payment_method_slug' => $this->_pm_instance->slug(),
 		);
 		if ( $this->_pm_instance->debug_mode() ) {
 			$trans_args['data_cc_number'] = '4242424242424242';
