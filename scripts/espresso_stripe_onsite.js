@@ -32,7 +32,7 @@ jQuery(document).ready(function($) {
 		 *     error: object
 		 *     id: string
 	 * }}
-	 * @namespace transaction_args
+	 * @namespace stripe_transaction_args
 	 * @type {{
 	 *     data_key: string,
 	 *     data_name: string,
@@ -80,14 +80,14 @@ jQuery(document).ready(function($) {
 			if ( typeof SPCO === 'undefined' ) {
 				//console.log( JSON.JSON.stringify( 'initialize: ' + 'no SPCO !!!', null, 4 ) );
 				EE_STRIPE.hide_stripe();
-				EE_STRIPE.display_error( transaction_args.no_SPCO_error );
+				EE_STRIPE.display_error( stripe_transaction_args.no_SPCO_error );
 				return;
 			}
 			// ensure that the StripeCheckout js class is loaded
 			if ( typeof StripeCheckout === 'undefined' ) {
 				//SPCO.console_log( 'initialize', 'no StripeCheckout!!', true );
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
-				EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'EE_STRIPE.init() error', transaction_args.no_StripeCheckout_error ), '' );
+				EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'EE_STRIPE.init() error', stripe_transaction_args.no_StripeCheckout_error ), '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				return;
 			}
@@ -136,7 +136,7 @@ jQuery(document).ready(function($) {
 			var req_data = {};
 			req_data.step = 'payment_options';
 			req_data.action = 'get_transaction_details_for_gateways';
-			req_data.selected_method_of_payment = transaction_args.payment_method_slug;
+			req_data.selected_method_of_payment = stripe_transaction_args.payment_method_slug;
 			req_data.generate_reg_form = false;
 			req_data.process_form_submission = false;
 			req_data.noheader = true;
@@ -173,7 +173,7 @@ jQuery(document).ready(function($) {
 		set_up_handler : function() {
 			//SPCO.console_log( 'initialize', 'set_up_handler', true );
 			EE_STRIPE.handler = StripeCheckout.configure({
-				key: transaction_args.data_key,
+				key: stripe_transaction_args.data_key,
 				token: function( stripe_token ) {
 					//SPCO.console_log_object( 'stripe_token', stripe_token, 0 );
 					// Use the token to create the charge with a server-side script.
@@ -208,7 +208,7 @@ jQuery(document).ready(function($) {
 				EE_STRIPE.token_string.val( stripe_token.id );
 				//SPCO.console_log( 'checkout_success > stripe_token.id', stripe_token.id, true );
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
-				EE_STRIPE.notification =SPCO.generate_message_object( transaction_args.accepted_message, '', '' );
+				EE_STRIPE.notification =SPCO.generate_message_object( stripe_transaction_args.accepted_message, '', '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				//  hide any return to cart buttons, etc
 				$( '.hide-me-after-successful-payment-js' ).hide();
@@ -229,7 +229,7 @@ jQuery(document).ready(function($) {
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
 				EE_STRIPE.notification = SPCO.generate_message_object( '', SPCO.tag_message_for_debugging( 'stripeResponseHandler error', stripe_token.error.message ), '' );
 				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
-				EE_STRIPE.stripe_response.text( transaction_args.card_error_message ).addClass( 'important-notice error' ).show();
+				EE_STRIPE.stripe_response.text( stripe_transaction_args.card_error_message ).addClass( 'important-notice error' ).show();
 			}
 		},
 
@@ -353,15 +353,15 @@ jQuery(document).ready(function($) {
 				SPCO.hide_notices();
 				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
 				EE_STRIPE.handler.open({
-					name: transaction_args.data_name,
-					image: transaction_args.data_image,
+					name: stripe_transaction_args.data_name,
+					image: stripe_transaction_args.data_image,
 					description: EE_STRIPE.product_description.val(),
 					amount: parseFloat( EE_STRIPE.txn_data[ 'payment_amount' ] ) * 100,
 					email: EE_STRIPE.transaction_email.val(),
-					currency: transaction_args.data_currency,
-					panelLabel: transaction_args.data_panel_label,
-					zipCode : transaction_args.validate_zip,
-					billingAddress : transaction_args.billing_address
+					currency: stripe_transaction_args.data_currency,
+					panelLabel: stripe_transaction_args.data_panel_label,
+					zipCode : stripe_transaction_args.validate_zip,
+					billingAddress : stripe_transaction_args.billing_address
 				});
 			});
 		},
@@ -447,7 +447,7 @@ jQuery(document).ready(function($) {
 	// also initialize Stripe Checkout if the selected method of payment changes
 	SPCO.main_container.on( 'spco_switch_payment_methods', function( event, payment_method ) {
 		//SPCO.console_log( 'payment_method', payment_method, false );
-		if ( typeof payment_method !== 'undefined' && payment_method === transaction_args.payment_method_slug ) {
+		if ( typeof payment_method !== 'undefined' && payment_method === stripe_transaction_args.payment_method_slug ) {
 			EE_STRIPE.selected = true;
 			EE_STRIPE.initialize();
 		} else {

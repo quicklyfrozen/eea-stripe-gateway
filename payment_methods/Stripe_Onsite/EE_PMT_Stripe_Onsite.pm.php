@@ -229,7 +229,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		}
 
 			// Localize the script with our transaction data.
-		wp_localize_script( 'espresso_stripe_payment_js', 'transaction_args', $trans_args);
+		wp_localize_script( 'espresso_stripe_payment_js', 'stripe_transaction_args', $trans_args);
 	}
 
 
