@@ -143,7 +143,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						array(
 							'html_id' => 'ee-stripe-prod-description',
 							'html_name' => 'stripeProdDescription',
-							'default' => apply_filters( 'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__description', $event_name, $transaction );
+							'default' => apply_filters( 'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__description', $event_name, $transaction )
 						)
 					)
 				)
