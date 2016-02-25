@@ -89,10 +89,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 */
 	public function generate_new_billing_form( EE_Transaction $transaction = NULL, $extra_args = array() ) {
 		EE_Registry::instance()->load_helper( 'Money' );
-		$event = '';
+		$event_name = '';
 		$email = '';
 		if ( $transaction->primary_registration() instanceof EE_Registration ) {
-			$event = $transaction->primary_registration()->event_name();
+			$event_name = $transaction->primary_registration()->event_name();
 			if ( $transaction->primary_registration()->attendee() instanceof EE_Attendee ) {
 				$email = $transaction->primary_registration()->attendee()->email();
 			}
@@ -143,7 +143,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						array(
 							'html_id' => 'ee-stripe-prod-description',
 							'html_name' => 'stripeProdDescription',
-							'default' => $event
+							'default' => apply_filters( 'FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__description', $event_name, $transaction )
 						)
 					)
 				)
