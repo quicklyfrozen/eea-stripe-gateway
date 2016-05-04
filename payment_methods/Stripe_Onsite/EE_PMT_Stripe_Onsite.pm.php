@@ -76,6 +76,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						'default' => false,
 						'required' => true
 					)
+				),
+				'stripe_logo_image'=>new EE_Admin_File_Uploader_Input(array(
+						'html_label_text'=>  sprintf(__("Logo Image %s", "event_espresso"),  $this->get_help_tab_link()),
+						'default'=>  EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
+						'html_help_text'=>  __("(Logo shown on Stripe checkout)", 'event_espresso'),
+					)
 				)
 			)
 		));
