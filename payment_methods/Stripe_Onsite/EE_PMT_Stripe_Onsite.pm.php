@@ -76,6 +76,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						'default' => false,
 						'required' => true
 					)
+				),
+				'stripe_logo_image'=>new EE_Admin_File_Uploader_Input(array(
+						'html_label_text'=>  sprintf(__("Logo Image %s", "event_espresso"),  $this->get_help_tab_link()),
+						'default'=>  EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
+						'html_help_text'=>  __("(Logo shown on Stripe checkout)", 'event_espresso'),
+					)
 				)
 			)
 		));
@@ -209,7 +215,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$trans_args = array(
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
 			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
-			'data_image' => EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
+			'data_image' => $this->_pm_instance->get_extra_meta( 'stripe_logo_image', TRUE, EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ) ),
 			//note its expected that we're using string values for 'true' and 'false' here. That's what the Stripe API is working with
 			'validate_zip' => $this->_pm_instance->get_extra_meta( 'validate_zip', true ) ? 'true' : 'false',
 			'billing_address' => $this->_pm_instance->get_extra_meta( 'billing_address', true ) ? 'true' : 'false',
