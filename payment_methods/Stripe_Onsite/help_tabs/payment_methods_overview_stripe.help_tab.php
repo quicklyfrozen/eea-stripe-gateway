@@ -30,7 +30,7 @@
 		<?php _e( 'Specify whether Checkout should collect the user\'s billing address.', 'event_espresso' ); ?>
 	</li>
 	<li>
-		<strong><?php _e( 'Logo image', 'event_espresso' ); ?></strong><br />
-		<?php _e( 'Upload a logo that will appear at the top of the Stripe checkout.', 'event_espresso' ); ?>
+		<strong><?php _e( 'Logo URL', 'event_espresso' ); ?></strong><br />
+		<?php _e( 'Upload a logo that will appear at the top of the Stripe checkout, for best results use 125px by 125px.', 'event_espresso' ); ?>
 	</li>
 </ul>
