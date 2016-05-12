@@ -4,7 +4,7 @@
   Plugin URI: http://www.eventespresso.com
   Description: The Event Espresso Stripe Gateway adds a new onsite payment method.
 
-  Version: 1.0.13.rc.003
+  Version: 1.0.13.p
 
   Author: Event Espresso
   Author URI: http://www.eventespresso.com
@@ -38,7 +38,7 @@
  *
  * ------------------------------------------------------------------------
  */
-define( 'EE_STRIPE_VERSION', '1.0.13.rc.003' );
+define( 'EE_STRIPE_VERSION', '1.0.13.p' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
 
 function load_espresso_stripe() {
