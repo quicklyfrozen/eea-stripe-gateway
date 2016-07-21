@@ -53,7 +53,7 @@ add_action( 'AHEE__EE_System__load_espresso_addons', 'load_espresso_stripe' );
 
 // Check for extensions needed by Stripe.
 function espresso_stripe_check_for_components() {
-  if ( ! extension_loaded('mbstring') || ! function_exists('json_decode') && ! function_exists('curl_init') ) {
+  if ( ! extension_loaded('mbstring') || ! function_exists('json_decode') || ! function_exists('curl_init') ) {
     deactivate_plugins( plugin_basename( EE_STRIPE_PLUGIN_FILE ) );
     add_action( 'admin_notices', 'espresso_stripe_gw_disable_notice' );
 
