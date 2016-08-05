@@ -1,13 +1,13 @@
 <?php
 /*
   Plugin Name: Event Espresso - Stripe Gateway (EE 4.6.0+)
-  Plugin URI: http://www.eventespresso.com
-  Description: The Event Espresso Stripe Gateway adds a new onsite payment method.
+  Plugin URI: https://eventespresso.com
+  Description: Stripe is an on-site payment method for Event Espresso for accepting credit and debit cards and is available to event organizers in many countries. An account with Stripe is required to accept payments.
 
   Version: 1.0.14.rc.001
 
   Author: Event Espresso
-  Author URI: http://www.eventespresso.com
+  Author URI: https://eventespresso.com
   Copyright 2014 Event Espresso (email : support@eventespresso.com)
 
   This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
  * @ package		Event Espresso
  * @ author			Event Espresso
  * @ copyright	(c) 2008-2014 Event Espresso  All Rights Reserved.
- * @ license		http://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
+ * @ license		https://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
  * @ link				http://www.eventespresso.com
  * @ version	 	EE4
  *
