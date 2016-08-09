@@ -46,7 +46,9 @@ jQuery(document).ready(function($) {
 	 *     accepted_message: string,
 	 *     card_error_message: string,
 	 *     no_SPCO_error: string,
-	 *     no_StripeCheckout_error: string
+	 *     no_StripeCheckout_error: string,
+     *     validate_zip: string,
+     *     billing_address: string
 	 * }}
 	 */
 	EE_STRIPE = {
