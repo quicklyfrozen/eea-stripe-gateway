@@ -360,8 +360,8 @@ jQuery(document).ready(function($) {
 					email: EE_STRIPE.transaction_email.val(),
 					currency: stripe_transaction_args.data_currency,
 					panelLabel: stripe_transaction_args.data_panel_label,
-					zipCode : stripe_transaction_args.validate_zip,
-					billingAddress : stripe_transaction_args.billing_address
+					zipCode : stripe_transaction_args.validate_zip === 'true',
+					billingAddress : stripe_transaction_args.billing_address === 'true'
 				});
 			});
 		},
