@@ -4,7 +4,7 @@
   Plugin URI: https://eventespresso.com
   Description: Stripe is an on-site payment method for Event Espresso for accepting credit and debit cards and is available to event organizers in many countries. An account with Stripe is required to accept payments.
 
-  Version: 1.0.14.rc.002
+  Version: 1.0.14.rc.003
 
   Author: Event Espresso
   Author URI: https://eventespresso.com
@@ -38,7 +38,7 @@
  *
  * ------------------------------------------------------------------------
  */
-define( 'EE_STRIPE_VERSION', '1.0.14.rc.002' );
+define( 'EE_STRIPE_VERSION', '1.0.14.rc.003' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
 
 function load_espresso_stripe() {
