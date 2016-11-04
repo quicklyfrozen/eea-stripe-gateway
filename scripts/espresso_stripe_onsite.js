@@ -156,7 +156,7 @@ jQuery(document).ready(function($) {
 				},
 				success : function( response ) {
 					// If we can't get a transaction data we can't set up a checkout.
-					if ( response['error'] || typeof response['TXN_ID'] == 'undefined' || response['TXN_ID'] == null ) {
+					if ( response['error'] || typeof response['TXN_ID'] === 'undefined' || response['TXN_ID'] === null ) {
 						return SPCO.submit_reg_form_server_error();
 					}
 					EE_STRIPE.txn_data = response;
@@ -321,7 +321,7 @@ jQuery(document).ready(function($) {
 		set_listener_for_payment_amount_change : function() {
 			//console.log( JSON.stringify( '**EE_STRIPE.set_listener_for_payment_amount_change**', null, 4 ) );
 			SPCO.main_container.on( 'spco_payment_amount', function( event, payment_amount ) {
-				if ( typeof payment_amount !== 'undefined' && parseInt(payment_amount) != 0 ) {
+				if ( typeof payment_amount !== 'undefined' && parseInt(payment_amount) !== 0 ) {
 					EE_STRIPE.transaction_total.val( payment_amount * 100 );
 					EE_STRIPE.txn_data[ 'payment_amount' ] = payment_amount;
 				}
