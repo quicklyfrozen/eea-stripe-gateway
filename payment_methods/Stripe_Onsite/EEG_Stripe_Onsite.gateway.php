@@ -24,6 +24,12 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	protected $_stripe_secret_key = NULL;
 
 	/**
+	 * OAuth access Token.
+	 * @var $_access_token string
+	 */
+	protected $_access_token = NULL;
+
+	/**
 	 * All the currencies supported by this gateway. Add any others you like,
 	 * as contained in the esp_currency table
 	 * @var array
@@ -37,8 +43,15 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * @return \EE_Payment|\EEI_Payment
 	 */
 	public function do_direct_payment($payment, $billing_info = null) {
+		$key = $this->_stripe_secret_key;
+		// If this merchant is using Stripe Connect we need a to use the connected account token.
+		if ( apply_filters( 'FHEE__EEG_Stripe_Onsite__do_direct_payment__use_connected_account_token', false )
+				&& $this->_access_token
+		) {
+			$key = $this->_access_token;
+		}
 		// Set your secret key.
-		Stripe::setApiKey( $this->_stripe_secret_key );
+		Stripe::setApiKey( $key );
 		$stripe_data = array(
 			'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
 			'currency' => $payment->currency_code(),
