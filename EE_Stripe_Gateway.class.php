@@ -1,4 +1,6 @@
-<?php if ( ! defined( 'EVENT_ESPRESSO_VERSION' )) { exit('NO direct script access allowed'); }
+<?php
+defined( 'EVENT_ESPRESSO_VERSION' ) || exit();
+
 // Define the plugin directory path and URL.
 define( 'EE_STRIPE_BASENAME', plugin_basename( EE_STRIPE_PLUGIN_FILE ) );
 define( 'EE_STRIPE_PATH', plugin_dir_path( __FILE__ ) );
@@ -10,19 +12,9 @@ define( 'EE_STRIPE_URL', plugin_dir_url( __FILE__ ) );
  * @package			Event Espresso
  * @subpackage		espresso-stripe-gateway
  * @author			Event Espresso
- * @ version		 	$VID:$
+ * @version		 	$VID:$
  */
 class EE_Stripe_Gateway extends EE_Addon {
-
-	/**
-	 *    class constructor
-	 * @return EE_Stripe_Gateway
-	 */
-	function __construct() {
-		// Log Stripe JS errors.
-		add_action( 'wp_ajax_eea_stripe_log_error', array( 'EE_PMT_Stripe_Onsite', 'log_stripe_error' ) );
-		add_action( 'wp_ajax_nopriv_eea_stripe_log_error', array( 'EE_PMT_Stripe_Onsite', 'log_stripe_error' ) );
-	}
 
 
 
@@ -32,13 +24,14 @@ class EE_Stripe_Gateway extends EE_Addon {
 			'Stripe_Gateway',
 			array(
 				'version' => EE_STRIPE_VERSION,
-				'min_core_version' => '4.8.11.dev.000',
+				'min_core_version' => '4.9.26.rc.000',
 				'main_file_path' => EE_STRIPE_PLUGIN_FILE,
 				'admin_callback' => 'additional_stripe_admin_hooks',
 				// register autoloaders
 				'autoloader_paths' => array(
 					'EE_PMT_Base' => EE_LIBRARIES . 'payment_methods' . DS . 'EE_PMT_Base.lib.php',
-					'EE_PMT_Stripe_Onsite' => EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite' . DS . 'EE_PMT_Stripe_Onsite.pm.php',
+					'EE_PMT_Stripe_Onsite' => EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
+                                              . DS . 'EE_PMT_Stripe_Onsite.pm.php',
 				),
 				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
 				'pue_options' => array(
@@ -50,16 +43,33 @@ class EE_Stripe_Gateway extends EE_Addon {
 				'payment_method_paths' => array(
 					EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
 				),
-		));
+		    )
+        );
 	}
 
 
-	/**
-	 * 	Setup default data for the addon.
-	 *
-	 *  @access 	public
-	 *  @return 	void
-	 */
+
+    /**
+     * a safe space for addons to add additional logic like setting hooks
+     * that will run immediately after addon registration
+     * making this a great place for code that needs to be "omnipresent"
+     */
+    public function after_registration()
+    {
+        // Log Stripe JS errors.
+        add_action('wp_ajax_eea_stripe_log_error', array('EE_PMT_Stripe_Onsite', 'log_stripe_error'));
+        add_action('wp_ajax_nopriv_eea_stripe_log_error', array('EE_PMT_Stripe_Onsite', 'log_stripe_error'));
+    }
+
+
+
+    /**
+     *    Setup default data for the addon.
+     *
+     * @access    public
+     * @return    void
+     * @throws \EE_Error
+     */
 	public function initialize_default_data() {
 		parent::initialize_default_data();
 
@@ -70,7 +80,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 			$currencies = $stripe->get_all_usable_currencies();
 			$all_related = $stripe->get_many_related( 'Currency' );
 
-			if ( ($currencies != $all_related) ) {
+			if ( $currencies !== $all_related ) {
 				$stripe->_remove_relations( 'Currency' );
 				foreach ( $currencies as $currency_obj ) {
 					$stripe->_add_relation_to( $currency_obj, 'Currency' );
@@ -102,7 +112,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 	 * @return array
 	 */
 	public static function plugin_actions( $links, $file ) {
-		if ( $file == EE_STRIPE_BASENAME ) {
+		if ( $file === EE_STRIPE_BASENAME ) {
 			// Before other links
 			array_unshift( $links, '<a href="admin.php?page=espresso_payment_settings">' . __('Settings') . '</a>' );
 		}
