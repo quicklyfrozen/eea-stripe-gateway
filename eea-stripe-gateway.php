@@ -22,21 +22,6 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA02110-1301USA
- *
- * ------------------------------------------------------------------------
- *
- * Event Espresso
- *
- * Event Registration and Management Plugin for WordPress
- *
- * @ package		Event Espresso
- * @ author			Event Espresso
- * @ copyright	(c) 2008-2014 Event Espresso  All Rights Reserved.
- * @ license		https://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
- * @ link				http://www.eventespresso.com
- * @ version	 	EE4
- *
- * ------------------------------------------------------------------------
  */
 define( 'EE_STRIPE_VERSION', '1.0.15.rc.000' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
