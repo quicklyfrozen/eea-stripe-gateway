@@ -15,8 +15,7 @@ class eea_stripe_tests extends EE_UnitTestCase
      */
     function test_loading_main_class()
     {
-        $this->assertEquals(has_action('AHEE__EE_System__load_espresso_addons', 'load_espresso_new_payment_method'),
-            10);
+        $this->assertEquals(10,has_action('AHEE__EE_System__load_espresso_addons', 'load_espresso_stripe'));
         $this->assertTrue(class_exists('EE_Stripe_Gateway'));
     }
 }
