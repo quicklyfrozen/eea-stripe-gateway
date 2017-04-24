@@ -52,8 +52,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	 * @return EE_Payment_Method_Form
 	 */
 	public function generate_new_settings_form() {
-
-		return new EE_Payment_Method_Form( array(
+		$pms_form = new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
 				'stripe_secret_key' => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() ),
@@ -85,6 +84,11 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				)
 			)
 		));
+
+		// Filtering the form contents.
+		$pms_form = apply_filters( 'FHEE__EE_PMT_Stripe_Onsite__generate_new_settings_form__form_filtering', $pms_form, $this, $this->_pm_instance );
+
+		return $pms_form;
 	}
 
 
@@ -210,7 +214,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		wp_enqueue_style( 'espresso_stripe_payment_css', EE_STRIPE_URL . 'css' . DS . 'espresso_stripe.css' );
 		wp_enqueue_script( 'stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE );
 		wp_enqueue_script( 'espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array( 'stripe_payment_js', 'single_page_checkout' ), EE_STRIPE_VERSION, TRUE );
-		
+
 		// Data needed in the JS.
 		$trans_args = array(
 			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
@@ -233,6 +237,9 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			$trans_args['data_exp_year'] = date('Y') + 4;
 			$trans_args['data_cvc'] = '248';
 		}
+
+		// Filter JS data.
+		$trans_args = apply_filters( 'FHEE__EE_PMT_Stripe_Onsite__enqueue_stripe_payment_scripts__js_data', $trans_args, $this->_pm_instance );
 
 			// Localize the script with our transaction data.
 		wp_localize_script( 'espresso_stripe_payment_js', 'stripe_transaction_args', $trans_args);
