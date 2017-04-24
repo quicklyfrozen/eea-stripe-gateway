@@ -4,7 +4,7 @@
   Plugin URI: https://eventespresso.com
   Description: Stripe is an on-site payment method for Event Espresso for accepting credit and debit cards and is available to event organizers in many countries. An account with Stripe is required to accept payments.
 
-  Version: 1.0.15.rc.000
+  Version: 1.0.15.rc.004
 
   Author: Event Espresso
   Author URI: https://eventespresso.com
@@ -22,23 +22,8 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA02110-1301USA
- *
- * ------------------------------------------------------------------------
- *
- * Event Espresso
- *
- * Event Registration and Management Plugin for WordPress
- *
- * @ package		Event Espresso
- * @ author			Event Espresso
- * @ copyright	(c) 2008-2014 Event Espresso  All Rights Reserved.
- * @ license		https://eventespresso.com/support/terms-conditions/   * see Plugin Licensing *
- * @ link				http://www.eventespresso.com
- * @ version	 	EE4
- *
- * ------------------------------------------------------------------------
  */
-define( 'EE_STRIPE_VERSION', '1.0.15.rc.000' );
+define( 'EE_STRIPE_VERSION', '1.0.15.rc.004' );
 define( 'EE_STRIPE_PLUGIN_FILE',  __FILE__ );
 
 function load_espresso_stripe() {

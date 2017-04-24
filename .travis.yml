@@ -1,0 +1,73 @@
+language: php
+cache:
+  apt: true
+env:
+  global:
+  - EE_VERSION=master
+  matrix:
+  - WP_VERSION=latest WP_MULTISITE=0
+  - WP_VERSION=latest WP_MULTISITE=1
+  - WP_VERSION=4.1 WP_MULTISITE=0
+  - WP_VERSION=4.1 WP_MULTISITE=1
+php:
+- 5.3
+- 5.4
+- 5.5
+- 5.6
+- 7.0
+- 7.1
+matrix:
+  exclude:
+  - php: 5.3
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  - php: 5.3
+    env: WP_VERSION=latest WP_MULTISITE=1
+  - php: 5.4
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  - php: 5.4
+    env: WP_VERSION=latest WP_MULTISITE=1
+  - php: 5.5
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  - php: 5.5
+    env: WP_VERSION=latest WP_MULTISITE=1
+  - php: 7.1
+    env: WP_VERSION=4.1 WP_MULTISITE=0
+  - php: 7.1
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  - php: 7.0
+    env: WP_VERSION=4.1 WP_MULTISITE=0
+  - php: 7.0
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  - php: hhvm
+    env: WP_VERSION=4.1 WP_MULTISITE=0
+  - php: hhvm
+    env: WP_VERSION=4.1 WP_MULTISITE=1
+  fast_finish: true
+before_install:
+- |
+  if [[ "$SKIP_XDEBUG_REMOVE" != "true" ]]; then
+    phpenv config-rm xdebug.ini
+    echo "xdebug removed";
+  fi
+before_script:
+- bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+- . tests/bin/setup-addon-tests.sh
+- export PATH="$HOME/.composer/vendor/bin:$PATH"
+- |
+  if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then
+    composer global require "phpunit/phpunit=5.7.*"
+  else
+    composer global require "phpunit/phpunit=4.8.*"
+  fi
+- mysql --version
+- phpunit --version
+- phpenv versions
+script: cd tests; phpunit;
+notifications:
+  slack:
+    rooms:
+      secure: "cNRtms0VW0ZkrR9bPCbC9e8T7CKMX2TdMFgd6YfrPsPwSj3C5A9c0/ozBOEBn/gvxPVmH+huJjyJ4u+Irm2c+OH6Jka0whc5iFCvc5T0QpJYFpKp8Aig7MJHtaNe3eojat0ZyNtjF9zqFqo+u0/sWEO+HMf5poits6MbD+BV/u9hFSlFkrU0xX+CTQPWPBndEoqrTQYyx23ABwZV7kwb5wWSfWJu5kBd/UKVkBYPIL4RESQn+zDUNoXC5IKo1FkKOvgNmJRkS01plxt1zgecxjNoVASz1wgMIPKtYJMNWRXsC81q7vbf9WgzEAnjs8Rp6nLU71Ic+rLrfbWSmAkqIU21hxFyGzTp+ryWXlHHhyxQ7vJIr683Wzynr1d2zYVFN/oQz/xQ7BRF9RRl2awV4xOryx49bu+CSVSAFf+BwwrlDPkf4JBzPPbPQyUjbUvh1CxNWyTlPhMBuVKw5iwfZEWc4Ub64EwBnuqOeWzNrtKD9vCLFLzTtiXihiFOTuPW57+daVUR+FElfPZLsRWk3GJj5cL3clSSXBwfj2C8oWuwzYR22q4HGqwF3C244oQ4C3NsoPZGgBxyauNs8Ka4AEZqCW89OF/KlhAyxhVxBqRv9JmEp3F+eIOI6Fz5KZuaVxViNq3LCiHs4gwL2uibd1CxvnnQF4cdTd1u5Qx8e3w="
+    on_success: always
+    on_failure: always
+    on_start: always
+
