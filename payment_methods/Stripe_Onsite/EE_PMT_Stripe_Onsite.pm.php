@@ -76,6 +76,28 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						'required' => true
 					)
 				),
+				'data_locale' => new EE_Select_Input(
+					array(
+						null 	=>	'None', 
+						'Auto' 	=>	'Auto (Defaults to English)',
+						'zh'	=>	'Simplified Chinese',
+						'da'	=>	'Danish',
+						'nl'	=>	'Dutch',
+						'en'	=>	'English',
+						'fi'	=>	'Finnish',
+						'fr'	=>	'French',
+						'de'	=>	'German',
+						'it'	=>	'Italian',
+						'ja'	=>	'Japanese',
+						'no'	=>	'Norwegian',
+						'es'	=>	'Spanish',
+						'sv'	=>	'Swedish' 
+					),
+					array(
+						'html_label_text' => __( 'Checkout locale', 'event_espresso' ),
+						'html_help_text' => __( 'This is the locale sent to Stripe to determine which language the checkout modal should use.', 'event_espresso' )
+					)
+				),
 				'stripe_logo_url'=>new EE_Admin_File_Uploader_Input(array(
 						'html_label_text'=>  sprintf(__("Logo URL %s", "event_espresso"),  $this->get_help_tab_link()),
 						'default'=>  EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
