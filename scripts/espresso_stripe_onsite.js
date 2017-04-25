@@ -368,6 +368,7 @@ jQuery(document).ready(function($) {
 					panelLabel: stripe_transaction_args.data_panel_label,
 					zipCode : stripe_transaction_args.validate_zip === 'true',
 					billingAddress : stripe_transaction_args.billing_address === 'true'
+					locale : stripe_transaction_args.data_locale,
 				});
 			});
 		},
