@@ -94,8 +94,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						'sv'	=>	__('Swedish', 'event_espresso') 
 					),
 					array(
-						'html_label_text' => __( 'Checkout locale', 'event_espresso' ),
-						'html_help_text' => __( 'This is the locale sent to Stripe to determine which language the checkout modal should use.', 'event_espresso' )
+						'html_label_text' => sprintf( __( "Checkout locale %s", 'event_espresso' ), $this->get_help_tab_link() ),
+						'html_help_text' => __( "This is the locale sent to Stripe to determine which language the checkout modal should use.", 'event_espresso' )
 					)
 				),
 				'stripe_logo_url'=>new EE_Admin_File_Uploader_Input(array(
