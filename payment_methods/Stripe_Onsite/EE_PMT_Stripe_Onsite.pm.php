@@ -79,7 +79,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 				'data_locale' => new EE_Select_Input(
 					array(
 						null 	=>	'None', 
-						'Auto' 	=>	'Auto (Defaults to English)',
+						'auto' 	=>	'Auto (Defaults to English)',
 						'zh'	=>	'Simplified Chinese',
 						'da'	=>	'Danish',
 						'nl'	=>	'Dutch',
