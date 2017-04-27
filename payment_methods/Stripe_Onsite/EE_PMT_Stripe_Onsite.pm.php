@@ -76,6 +76,28 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 						'required' => true
 					)
 				),
+				'data_locale' => new EE_Select_Input(
+					array(
+						null 	=>	__('None', 'event_espresso'), 
+						'auto' 	=>	__('Auto (Defaults to English)', 'event_espresso'),
+						'zh'	=>	__('Simplified Chinese', 'event_espresso'),
+						'da'	=>	__('Danish', 'event_espresso'),
+						'nl'	=>	__('Dutch', 'event_espresso'),
+						'en'	=>	__('English', 'event_espresso'),
+						'fi'	=>	__('Finnish', 'event_espresso'),
+						'fr'	=>	__('French', 'event_espresso'),
+						'de'	=>	__('German', 'event_espresso'),
+						'it'	=>	__('Italian', 'event_espresso'),
+						'ja'	=>	__('Japanese', 'event_espresso'),
+						'no'	=>	__('Norwegian', 'event_espresso'),
+						'es'	=>	__('Spanish', 'event_espresso'),
+						'sv'	=>	__('Swedish', 'event_espresso') 
+					),
+					array(
+						'html_label_text' => sprintf( __( "Checkout locale %s", 'event_espresso' ), $this->get_help_tab_link() ),
+						'html_help_text' => __( "This is the locale sent to Stripe to determine which language the checkout modal should use.", 'event_espresso' )
+					)
+				),
 				'stripe_logo_url'=>new EE_Admin_File_Uploader_Input(array(
 						'html_label_text'=>  sprintf(__("Logo URL %s", "event_espresso"),  $this->get_help_tab_link()),
 						'default'=>  EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ),
@@ -223,6 +245,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			//note its expected that we're using string values for 'true' and 'false' here. That's what the Stripe API is working with
 			'validate_zip' => $this->_pm_instance->get_extra_meta( 'validate_zip', true ) ? 'true' : 'false',
 			'billing_address' => $this->_pm_instance->get_extra_meta( 'billing_address', true ) ? 'true' : 'false',
+			'data_locale' => $this->_pm_instance->get_extra_meta( 'data_locale', true ),
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
 			'accepted_message' => __( 'Payment Accepted. Please click "Proceed to Finalize Registration" if not forwarded automatically.', 'event_espresso' ),
