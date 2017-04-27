@@ -59,6 +59,8 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
             'card' => $billing_info['ee_stripe_token'],
             'description' => $billing_info['ee_stripe_prod_description']
         );
+        $stripe_data = apply_filters('FHEE__EEG_Stripe_Onsite__do_direct_payment__stripe_data_array', $stripe_data, $payment, $transaction, $billing_info);
+        
         // Create the charge on Stripe's servers - this will charge the user's card.
         try {
             $this->log( array( 'Stripe Request data:' => $stripe_data ), $payment );
