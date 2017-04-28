@@ -225,7 +225,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'billing_address' => $this->_pm_instance->get_extra_meta( 'billing_address', true ) ? 'true' : 'false',
 			'data_currency' => EE_Registry::instance()->CFG->currency->code,
 			'data_panel_label' =>  sprintf( __( 'Pay %1$s Now', 'event_espresso' ), '{{amount}}' ),
-			'accepted_message' => __( 'Payment Accepted. Please click "Proceed to Finalize Registration" if not forwarded automatically.', 'event_espresso' ),
 			'card_error_message' => __( 'Payment Error! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
