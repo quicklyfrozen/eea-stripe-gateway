@@ -2,7 +2,7 @@
 /*
   Plugin Name: Event Espresso - Stripe Gateway (EE 4.6.0+)
   Plugin URI: https://eventespresso.com
-  Description: Stripe is an on-site payment method for Event Espresso for accepting credit and debit cards and is available to event organizers in many countries. An account with Stripe is required to accept payments.
+  Description: This is a modified copy of the Stripe add-on that switches everything over to support Zero-decimal currencies like the Chilean Peso. Future versions of the EE4 Stripe Gateway will have this built in. Stripe is an on-site payment method for Event Espresso for accepting credit and debit cards and is available to event organizers in many countries. An account with Stripe is required to accept payments.
 
   Version: 1.0.16.rc.002
 

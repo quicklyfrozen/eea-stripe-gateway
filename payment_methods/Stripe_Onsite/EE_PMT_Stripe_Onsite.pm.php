@@ -130,11 +130,11 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			}
 		}
 		if ( isset( $extra_args['amount_owing' ] )) {
-			$amount = $extra_args[ 'amount_owing' ] * 100;
+			$amount = $extra_args[ 'amount_owing' ];
 		} else {
 			// If this is a partial payment..
-			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
-			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() );
+			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() );
 			$owning = $total - $paid;
 			$amount = ( $owning > 0 ) ? $owning : $total;
 		}

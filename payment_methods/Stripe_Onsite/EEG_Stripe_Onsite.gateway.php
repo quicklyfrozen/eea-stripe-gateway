@@ -54,7 +54,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
         // Set your secret key.
         Stripe::setApiKey( $key );
         $stripe_data = array(
-            'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
+            'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 0) ),
             'currency' => $payment->currency_code(),
             'card' => $billing_info['ee_stripe_token'],
             'description' => $billing_info['ee_stripe_prod_description']
@@ -82,7 +82,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
         $payment->set_gateway_response( $charge_array['status'] );
         $payment->set_txn_id_chq_nmbr( $charge_array['id'] );
         $payment->set_details( $charge_array );
-        $payment->set_amount( floatval( $charge_array['amount'] / 100 ) );
+        $payment->set_amount( floatval( $charge_array['amount'] ) );
         $payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}

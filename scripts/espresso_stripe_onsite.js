@@ -319,7 +319,7 @@ jQuery(document).ready(function($) {
 			//console.log( JSON.stringify( '**EE_STRIPE.set_listener_for_payment_amount_change**', null, 4 ) );
 			SPCO.main_container.on( 'spco_payment_amount', function( event, payment_amount ) {
 				if ( typeof payment_amount !== 'undefined' && parseInt(payment_amount) !== 0 ) {
-					EE_STRIPE.transaction_total.val( payment_amount * 100 );
+					EE_STRIPE.transaction_total.val( payment_amount );
 					EE_STRIPE.txn_data[ 'payment_amount' ] = payment_amount;
 				}
 				//console.log( JSON.stringify( 'payment_amount: ' + payment_amount, null, 4 ) );
@@ -359,7 +359,7 @@ jQuery(document).ready(function($) {
 					name: stripe_transaction_args.data_name,
 					image: stripe_transaction_args.data_image,
 					description: EE_STRIPE.product_description.val(),
-					amount: parseFloat( EE_STRIPE.txn_data[ 'payment_amount' ] ) * 100,
+					amount: parseFloat( EE_STRIPE.txn_data[ 'payment_amount' ] ),
 					email: EE_STRIPE.transaction_email.val(),
 					currency: stripe_transaction_args.data_currency,
 					panelLabel: stripe_transaction_args.data_panel_label,
