@@ -43,7 +43,6 @@ jQuery(document).ready(function($) {
 	 *     data_exp_year: number,
 	 *     data_cvc: number,
 	 *     data_panel_label: string,
-	 *     accepted_message: string,
 	 *     card_error_message: string,
 	 *     no_SPCO_error: string,
 	 *     no_StripeCheckout_error: string,
@@ -212,8 +211,6 @@ jQuery(document).ready(function($) {
 				EE_STRIPE.token_string.val( stripe_token.id );
 				//SPCO.console_log( 'checkout_success > stripe_token.id', stripe_token.id, true );
 				SPCO.offset_from_top_modifier = EE_STRIPE.offset_from_top_modifier;
-				EE_STRIPE.notification =SPCO.generate_message_object( stripe_transaction_args.accepted_message, '', '' );
-				SPCO.scroll_to_top_and_display_messages( EE_STRIPE.stripe_button_div, EE_STRIPE.notification, true );
 				//  hide any return to cart buttons, etc
 				$( '.hide-me-after-successful-payment-js' ).hide();
 				// trigger click event on SPCO "Proceed to Next Step" button
@@ -367,7 +364,8 @@ jQuery(document).ready(function($) {
 					currency: stripe_transaction_args.data_currency,
 					panelLabel: stripe_transaction_args.data_panel_label,
 					zipCode : stripe_transaction_args.validate_zip === 'true',
-					billingAddress : stripe_transaction_args.billing_address === 'true'
+					billingAddress : stripe_transaction_args.billing_address === 'true',
+					locale : stripe_transaction_args.data_locale
 				});
 			});
 		},
