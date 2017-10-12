@@ -104,11 +104,12 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
                 $_GET['webhook_action'],
                 $_GET['access_token'],
                 $_GET['refresh_token'],
-                $_GET['client_id'],
+                $_GET['stripe_publishable_key'],
                 $_GET['nonce'],
                 $_GET['stripe_slug'],
                 $_GET['stripe_user_id'],
-                $_GET['livemode']
+                $_GET['livemode'],
+                $_GET['client_id']
             )
             || $_GET['webhook_action'] !== 'eeg_stripe_grab_access_token'
         ) {
@@ -126,7 +127,8 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         }
         $stripe->update_extra_meta('stripe_secret_key', sanitize_text_field($_GET['access_token']));
         $stripe->update_extra_meta('refresh_token', sanitize_text_field($_GET['refresh_token']));
-        $stripe->update_extra_meta('publishable_key',sanitize_text_field($_GET['client_id']));
+        $stripe->update_extra_meta('publishable_key',sanitize_text_field($_GET['stripe_publishable_key']));
+        $stripe->update_extra_meta('client_id', sanitize_text_field($_GET['client_id']));
         $stripe->update_extra_meta('livemode',sanitize_key($_GET['livemode']));
         $stripe->update_extra_meta('stripe_user_id', sanitize_text_field($_GET['stripe_user_id']));
         $stripe->update_extra_meta('using_stripe_connect', true);
