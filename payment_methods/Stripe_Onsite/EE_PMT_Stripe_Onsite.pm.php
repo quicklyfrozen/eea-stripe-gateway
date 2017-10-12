@@ -55,12 +55,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 		$pms_form = new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
 				'stripe_secret_key' => new EE_Text_Input( array(
-					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() ),
-					'required' => true
+					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
 				)),
 				'publishable_key' => new EE_Text_Input( array(
-					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() ),
-					'required' => true
+					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
 				)),
 				'validate_zip' => new EE_Yes_No_Input(
 					array(

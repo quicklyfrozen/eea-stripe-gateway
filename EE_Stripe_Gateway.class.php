@@ -32,6 +32,7 @@ class EE_Stripe_Gateway extends EE_Addon {
 					'EE_PMT_Base' => EE_LIBRARIES . 'payment_methods' . DS . 'EE_PMT_Base.lib.php',
 					'EE_PMT_Stripe_Onsite' => EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
                                               . DS . 'EE_PMT_Stripe_Onsite.pm.php',
+                    'EE_Stripe_OAuth_Form' => EE_STRIPE_PATH . 'forms' . DS . 'EE_Stripe_OAuth_Form.form.php',
 				),
 				// if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
 				'pue_options' => array(
@@ -43,6 +44,9 @@ class EE_Stripe_Gateway extends EE_Addon {
 				'payment_method_paths' => array(
 					EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
 				),
+                'module_paths'     => array(
+                    EE_STRIPE_PATH . 'EED_Stripe_Connect_OAuth_Middleman.module.php',
+                ),
 		    )
         );
 	}

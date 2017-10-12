@@ -35,6 +35,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 	 * @param EEI_Payment $payment
 	 * @param array       $billing_info
 	 * @return \EE_Payment|\EEI_Payment
+     * @throws EE_Error
 	 */
 	public function do_direct_payment($payment, $billing_info = null) {
         if (! $payment instanceof EEI_Payment) {
@@ -49,8 +50,19 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
             return $payment;
         }
         // If this merchant is using Stripe Connect we need a to use the connected account token.
+        $payment_method = $transaction->payment_method();
+        if (! $payment_method instanceof EE_Payment_Method) {
+            $payment->set_gateway_response(
+                esc_html__(
+                    'Error. No payment method on this transaction, although we know its Stripe.',
+                    'event_espresso'
+                )
+            );
+            $payment->set_status($this->_pay_model->failed_status());
+            return $payment;
+        }
         $key = apply_filters('FHEE__EEG_Stripe_Onsite__do_direct_payment__use_connected_account_token',
-                             $this->_stripe_secret_key, $transaction->payment_method());
+            $this->_stripe_secret_key, $transaction->payment_method());
         // Set your secret key.
         Stripe::setApiKey( $key );
         $stripe_data = array(
