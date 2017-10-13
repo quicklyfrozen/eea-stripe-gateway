@@ -48,8 +48,6 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         if (EE_Maintenance_Mode::instance()->models_can_query()) {
             // A hook to handle the process after the return from Stripe and get the auth creds.
             add_action('init', array('EED_Stripe_Connect_OAuth_Middleman', 'request_access'), 16);
-            // A web-hook listener.
-            add_action('init', array('EED_Stripe_Connect_OAuth_Middleman', 'webhook_listener'));
         }
     }
 
@@ -202,7 +200,6 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
      */
     public static function disconnect_account()
     {
-        $err_msg = '';
         // Check if all the needed parameters are present.
         if (! isset($_POST['submitted_pm'])) {
             echo wp_json_encode(
@@ -316,84 +313,6 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
 
 
 
-    /**
-     *  Stripe Webhook listener.
-     *  Right now this is set to catch the connected account "deauthorization" events.
-     *  Webhook endpoint should look like:
-     *  "https://[your.site]?webhook_action=eeg_stripe_webhook_event".
-     * @todo oauth middleman needs to accept these requests too
-     * @return void
-     * @throws \InvalidArgumentException
-     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
-     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
-     * @throws \EE_Error
-     */
-    public static function webhook_listener()
-    {
-        // Is this a webhook we expect?
-        if (! isset($_REQUEST['webhook_action']) || $_REQUEST['webhook_action'] !== 'eeg_stripe_webhook_event') {
-            // This is not our call so we just return.
-            return;
-        }
-        // Retrieve the request body contents.
-        $post_body = file_get_contents('php://input');
-        if ($post_body) {
-            $data = json_decode($post_body);
-            if ($data instanceof stdClass && $data->id && $data->type === 'account.application.deauthorized') {
-                if (is_multisite()) {
-                    // Main site.
-                    switch_to_blog(get_main_network_id());
-                    // Get list of blogs with this connected user.
-                    $blog_list = EEM_Extra_Meta::instance()
-                                                ->get_all(array(
-                                                    array(
-                                                        'EXM_key'   => EED_Stripe_Connect_OAuth::STRIPE_USER_ID_META_KEY,
-                                                        'EXM_value' => $data->user_id,
-                                                        'EXM_type'  => 'Blog'
-                                                    ),
-                                                    'limit' => 1
-                                                ));
-                    // Main site return.
-                    restore_current_blog();
-                    foreach ($blog_list as $blog_extra_meta) {
-                        if ($blog_extra_meta instanceof EE_Extra_Meta) {
-                            $disconnected = false;
-                            // Connected account site.
-                            switch_to_blog((int)$blog_extra_meta->get('OBJ_ID'));
-                            // Try to get Stripe PM. We don't get any extra info from this Stripe web-hook so we use the standard/known slug.
-                            $stripe = EEM_Payment_Method::instance()->get_one(array(array(
-                                'PMD_type'             => 'Stripe',
-                                'Extra_Meta.EXM_type'  => 'Payment_Method',
-                                'Extra_Meta.EXM_key'   => EED_Stripe_Connect_OAuth::STRIPE_USER_ID_META_KEY,
-                                'Extra_Meta.EXM_value' => $data->user_id
-                            )));
-                            // This is the right connection so we may reset it.
-                            if ($stripe instanceof EE_Payment_Method) {
-                                $stripe->delete_extra_meta('stripe_secret_key');
-                                $stripe->delete_extra_meta('refresh_token');
-                                $stripe->delete_extra_meta('publishable_key');
-                                $stripe->delete_extra_meta('stripe_user_id');
-                                $stripe->delete_extra_meta('livemode');
-                                $stripe->update_extra_meta('using_stripe_connect', false);
-                                $disconnected = true;
-                            }
-                            // Connected account site return.
-                            restore_current_blog();
-                            if ($disconnected) {
-                                // Remove the connected user blog meta.
-                                $blog_extra_meta->delete();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // Return OK status to Stripe.
-        status_header(200);
-        header('Content-Type: application/json');
-        echo wp_json_encode(array('code' => 200));
-        exit();
-    }
 
 
 
