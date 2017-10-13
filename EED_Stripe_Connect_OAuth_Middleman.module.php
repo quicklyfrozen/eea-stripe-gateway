@@ -73,7 +73,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             add_action('wp_ajax_eeg_stripe_update_connection_status',
                 array('EED_Stripe_Connect_OAuth_Middleman', 'update_connection_status'));
             // Stripe disconnect.
-            add_action('wp_ajax_eeg_request_stripe_disconnect', array('EED_Stripe_Connect_OAuth', 'disconnect_account'));
+            add_action('wp_ajax_eeg_request_stripe_disconnect', array('EED_Stripe_Connect_OAuth_Middleman', 'disconnect_account'));
             // Filter the PM settings form subsections.
             add_filter('FHEE__EE_PMT_Stripe_Onsite__generate_new_settings_form__form_filtering',
                 array('EED_Stripe_Connect_OAuth_Middleman', 'add_stripe_connect_button'), 10, 3);
@@ -175,7 +175,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             'nonce' => wp_create_nonce('eeg_stripe_grab_access_token')
 
         ), site_url());
-        $middleman_server_tld = defined('LOCAL_MIDDLEMAN_SERVER') ? 'dev' : 'com';
+
         // Request URL should look something like
         // @codingStandardsIgnoreStart
         //https://connect.eventespresso.dev/stripeconnect/forward?return_url=http%253A%252F%252Fsrc.wordpress-develop.dev%252Fwp-admin%252Fadmin.php%253Fpage%253Dwc-settings%2526amp%253Btab%253Dintegration%2526amp%253Bsection%253Dstripeconnectconnect%2526amp%253Bwc_stripeconnect_token_nonce%253D6585f05708&scope=read_write
@@ -183,7 +183,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         $request_url = add_query_arg(array(
             'scope'          => 'read_write',
             'return_url'   => rawurlencode($redirect_uri),
-        ), 'https://connect.eventespresso.' . $middleman_server_tld . '/stripeconnect/forward');
+        ), EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url() . 'forward');
         echo wp_json_encode(array(
             'stripe_success' => true,
             'request_url'    => $request_url,
@@ -194,7 +194,6 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
 
     /**
      *  Disconnect the current client's account from the EE account.
-     * @todo oauth middleman needs deauthorize endpoint
      * @return void
      * @throws \InvalidArgumentException
      * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
@@ -205,88 +204,114 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
     {
         $err_msg = '';
         // Check if all the needed parameters are present.
-        if (isset($_POST['submitted_pm'])) {
-            $submitted_pm = sanitize_text_field($_POST['submitted_pm']);
-            $stripe = EEM_Payment_method::instance()->get_one_by_slug($submitted_pm);
-            if (! $stripe instanceof EE_Payment_Method) {
-                $err_msg = __('Could not specify the payment method.', 'event_espresso');
-                echo wp_json_encode(array('stripe_error' => $err_msg));
-                exit();
-            }
-            $stripe_user_id = $stripe->get_extra_meta('stripe_user_id', true);
-            if (! $stripe_user_id) {
-                $err_msg = __('Could not specify the connected user.', 'event_espresso');
-                echo wp_json_encode(array('stripe_error' => $err_msg));
-                exit();
-            }
-
-            // Those are the EE Stripe Client credentials.
-            $client_data = EED_Stripe_Connect_OAuth::client_credentials($stripe, $_POST);
-            $disconnect_args = array(
-                'client_id'      => $client_data['id'],
-                'stripe_user_id' => $stripe_user_id,
+        if (! isset($_POST['submitted_pm'])) {
+            echo wp_json_encode(
+                array(
+                    'stripe_error' =>  esc_html__('Missing some required parameters: payment method slug.', 'event_espresso')
+                )
             );
-            $post_args = array(
-                'method'      => 'POST',
-                'timeout'     => 60,
-                'redirection' => 5,
-                'blocking'    => true,
-                'headers'     => array(
-                    'Authorization' => ' Bearer ' . $client_data['secret'],
-                ),
-                'body'        => $disconnect_args,
+            exit();
+        }
+        $submitted_pm = sanitize_text_field($_POST['submitted_pm']);
+        $stripe = EEM_Payment_Method::instance()->get_one_by_slug($submitted_pm);
+        if (! $stripe instanceof EE_Payment_Method) {
+            echo wp_json_encode(
+                array(
+                    'stripe_error' => esc_html__('Could not specify the payment method.', 'event_espresso')
+                )
             );
-            $post_url = 'https://connect.stripe.com/oauth/deauthorize';
-            // Request the token.
-            $response = wp_remote_post($post_url, $post_args);
-            $err_msg = '';
-            $response_body = (isset($response['body']) && $response['body']) ? json_decode($response['body']) : false;
-            if (! is_wp_error($response) && $response_body
-                && (! isset($response_body->error)
-                    || strpos($response_body->error_description, 'This application is not connected') !== false)
-            ) {
-                $stripe->delete_extra_meta('stripe_secret_key');
-                $stripe->delete_extra_meta('refresh_token');
-                $stripe->delete_extra_meta('publishable_key');
-                $stripe->delete_extra_meta('stripe_user_id');
-                $stripe->delete_extra_meta('livemode');
-                $stripe->update_extra_meta('using_stripe_connect', false);
-                // Switch to Main site and delete the blog connection meta entry.
-                if (is_multisite()) {
-                    $blog_list = array();
-                    // Main site.
-                    switch_to_blog(get_main_network_id());
-                    $blog_list = EEM_Extra_Meta::instance()
-                                                ->get_all(array(
-                                                    array(
-                                                        'EXM_key'   => EED_Stripe_Connect_OAuth::STRIPE_USER_ID_META_KEY,
-                                                        'EXM_value' => $stripe_user_id,
-                                                        'EXM_type'  => 'Blog'
-                                                    ),
-                                                    'limit' => 1
-                                                ));
-                    $the_blog = reset($blog_list);
-                    if ($the_blog instanceof EE_Extra_Meta) {
-                        $the_blog->delete();
-                    }
-                    // Main site return.
-                    restore_current_blog();
-                }
-                echo wp_json_encode(array(
-                    'stripe_success' => true
-                ));
-                exit();
-            } elseif (isset($response_body->error_description)) {
+            exit();
+        }
+        $stripe_user_id = $stripe->get_extra_meta('stripe_user_id', true);
+        if (! $stripe_user_id) {
+            echo wp_json_encode(
+                array(
+                    'stripe_error' => esc_html__('Could not specify the connected user.', 'event_espresso')
+                )
+            );
+            exit();
+        }
+        $client_id = $stripe->get_extra_meta('client_id', true);
+        if (! $client_id) {
+            echo wp_json_encode(
+                array(
+                    'stripe_error' => esc_html__('Could not specify the connected client ID.', 'event_espresso')
+                )
+            );
+            exit();
+        }
+        $post_args = array(
+            'method'      => 'POST',
+            'timeout'     => 60,
+            'redirection' => 5,
+            'blocking'    => true,
+            'body'        => array(
+                'stripe_user_id' =>  $stripe_user_id,
+                'client_id' =>  $client_id,
+            ),
+        );
+        if (defined('LOCAL_MIDDLEMAN_SERVER')) {
+            $post_args['sslverify'] = false;
+        }
+        $post_url = EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url() . 'deauthorize';
+ //        POST https://connect.eventespresso.dev/stripeconnect/deauthorize
+ // * with body stripe_user_id=123qwe
+        // Request the token.
+        $response = wp_remote_post($post_url, $post_args);
+        if (is_wp_error($response)) {
+            echo wp_json_encode(
+                array(
+                    'stripe_error' => $response->get_error_message()
+                )
+            );
+            exit();
+        }
+        $response_body = (isset($response['body']) && $response['body']) ? json_decode($response['body']) : false;
+        //for any error (besides already being disconnected), give an error response
+        if ($response_body === false
+            ||
+            (
+                isset($response_body->error)
+                && strpos($response_body->error_description, 'This application is not connected') === false
+            )
+        ) {
+            if (isset($response_body->error_description)) {
                 $err_msg = $response_body->error_description;
             } else {
                 $err_msg = esc_html__('Unknown response received!', 'event_espresso');
             }
-        } else {
-            $err_msg = __('Missing some required parameters: payment method slug.', 'event_espresso');
+            echo wp_json_encode(
+                array(
+                    'stripe_error' => $err_msg
+                )
+            );
+            exit();
         }
-        // If we got here then something went wrong.
-        echo wp_json_encode(array('stripe_error' => $err_msg));
+        $stripe->delete_extra_meta('stripe_secret_key');
+        $stripe->delete_extra_meta('refresh_token');
+        $stripe->delete_extra_meta('publishable_key');
+        $stripe->delete_extra_meta('stripe_user_id');
+        $stripe->delete_extra_meta('livemode');
+        $stripe->update_extra_meta('using_stripe_connect', false);
+        echo wp_json_encode(
+            array(
+            'stripe_success' => true
+            )
+        );
         exit();
+    }
+
+
+
+    /**
+     * Gets the base URL to all the Stripe Connect middleman services for Event Espresso.
+     * If LOCAL_MIDDLEMAN_SERVER is defined, tries to send requests to connect.eventespresso.dev
+     * which can be a local instance of EE connect.
+     * @return string
+     */
+    public static function stripe_connect_middleman_base_url(){
+        $middleman_server_tld = defined('LOCAL_MIDDLEMAN_SERVER') ? 'dev' : 'com';
+        return 'https://connect.eventespresso.' . $middleman_server_tld . '/stripeconnect/';
     }
 
 
