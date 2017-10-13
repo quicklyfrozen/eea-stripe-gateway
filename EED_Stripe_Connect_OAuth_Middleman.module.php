@@ -344,9 +344,9 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
                             )));
                             // This is the right connection so we may reset it.
                             if ($stripe instanceof EE_Payment_Method) {
-                                $stripe->delete_extra_meta('access_token');
+                                $stripe->delete_extra_meta('stripe_secret_key');
                                 $stripe->delete_extra_meta('refresh_token');
-                                $stripe->delete_extra_meta('connect_publishable_key');
+                                $stripe->delete_extra_meta('publishable_key');
                                 $stripe->delete_extra_meta('stripe_user_id');
                                 $stripe->delete_extra_meta('livemode');
                                 $stripe->update_extra_meta('using_stripe_connect', false);
@@ -385,7 +385,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
     {
         $submitted_pm = sanitize_key($_POST['submitted_pm']);
         $stripe = EEM_Payment_Method::instance()->get_one_by_slug($submitted_pm);
-        $access_token = $stripe->get_extra_meta('access_token', true);
+        $access_token = $stripe->get_extra_meta('stripe_secret_key', true);
         $connected = true;
         if (empty($access_token)) {
             $connected = false;

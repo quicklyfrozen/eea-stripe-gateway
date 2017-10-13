@@ -217,11 +217,10 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
         if (! $this->_the_pm_instance) {
             return false;
         }
-        $access_token = $this->_the_pm_instance->get_extra_meta('access_token', true);
+        $access_token = $this->_the_pm_instance->get_extra_meta('stripe_secret_key', true);
         if (! empty($access_token)) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 }
