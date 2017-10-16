@@ -74,13 +74,14 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
         $this->_connect_btn_text         = esc_html__('Connect with Stripe', 'event_espresso');
         $this->_connect_btn_sandbox_text = esc_html__('Connect with Stripe (sandbox)', 'event_espresso');
         $this->_connected_sandbox_text   = esc_html__('Test mode (using sandbox credentials)', 'event_espresso');
-        $options                         = array(
-            'html_id'               => $this->_pm_slug . '_oauth_connect_form',
-            'layout_strategy'       => new EE_Admin_Two_Column_Layout(),
-            'validation_strategies' => array(new EE_Simple_HTML_Validation_Strategy()),
-            'subsections'           => $this->_oauth_form_contents(),
+        parent::__construct(
+            array(
+                'html_id'               => $this->_pm_slug . '_oauth_connect_form',
+                'layout_strategy'       => new EE_Admin_Two_Column_Layout(),
+                'validation_strategies' => array(new EE_Simple_HTML_Validation_Strategy()),
+                'subsections'           => $this->_oauth_form_contents(),
+            )
         );
-        parent::__construct($options);
     }
 
 
