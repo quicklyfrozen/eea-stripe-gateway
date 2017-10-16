@@ -1,8 +1,7 @@
-<?php if (! defined('EVENT_ESPRESSO_VERSION')) {
-    exit('NO direct script access allowed');
-}
-use EEA_Stripe\Stripe;
-use EEA_Stripe\Stripe_Charge;
+<?php
+
+defined('EVENT_ESPRESSO_VERSION') || exit('NO direct script access allowed');
+
 
 /**
  *    Class  EED_Stripe_Connect_OAuth
@@ -15,8 +14,11 @@ use EEA_Stripe\Stripe_Charge;
 class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
 {
 
+
+
+
     /**
-     * @return EED_Stripe_Connect_OAuth
+     * @return EED_Module|EED_Stripe_Connect_OAuth_Middleman
      */
     public static function instance()
     {
@@ -115,12 +117,12 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         }
         // Check the nonce.
         if ( ! wp_verify_nonce($_GET['nonce'], 'eeg_stripe_grab_access_token')) {
-            EED_Stripe_Connect_OAuth::close_oauth_window(esc_html__('Nonce fail!', 'event_espresso'));
+            EED_Stripe_Connect_OAuth_Middleman::close_oauth_window(esc_html__('Nonce fail!', 'event_espresso'));
         }
         // Get pm data.
         $stripe = EEM_Payment_Method::instance()->get_one_by_slug(sanitize_key($_GET['stripe_slug']));
         if (! $stripe instanceof EE_Payment_Method) {
-            EED_Stripe_Connect_OAuth::close_oauth_window(esc_html__('Could not specify the payment method!',
+            EED_Stripe_Connect_OAuth_Middleman::close_oauth_window(esc_html__('Could not specify the payment method!',
                 'event_espresso'));
         }
         $stripe->update_extra_meta('stripe_secret_key', sanitize_text_field($_GET['access_token']));
