@@ -44,6 +44,10 @@ class EE_Stripe_Gateway extends EE_Addon
                                               . DS . 'EE_PMT_Stripe_Onsite.pm.php',
                     'EE_Stripe_OAuth_Form' => EE_STRIPE_PATH . 'forms' . DS . 'EE_Stripe_OAuth_Form.form.php',
                 ),
+                'namespace'        => array(
+                    'FQNS' => 'EventEspresso\Stripe',
+                    'DIR'  => __DIR__,
+                ),
                 // if plugin update engine is being used for auto-updates. not needed if PUE is not being used.
                 'pue_options'          => array(
                     'pue_plugin_slug' => 'eea-stripe-gateway',

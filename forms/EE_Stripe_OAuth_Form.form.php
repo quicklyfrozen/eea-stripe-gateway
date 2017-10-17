@@ -1,4 +1,6 @@
-<?php if (! defined('EVENT_ESPRESSO_VERSION')) {
+<?php use EventEspresso\Stripe\domain\Domain;
+
+if (! defined('EVENT_ESPRESSO_VERSION')) {
     exit('No direct script access allowed');
 }
 
@@ -102,7 +104,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
             )
         );
         // Is this a test connection?
-        $livemode_txt = ! $this->_the_pm_instance->get_extra_meta('livemode', true)
+        $livemode_txt = ! $this->_the_pm_instance->get_extra_meta(Domain::META_KEY_LIVE_MODE, true)
             ? ' ' . EEH_HTML::strong(
                 $this->_connected_sandbox_text,
                 'eeg_stripe_test_connected_txt',
@@ -233,7 +235,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
         if (! $this->_the_pm_instance) {
             return false;
         }
-        $access_token = $this->_the_pm_instance->get_extra_meta('stripe_secret_key', true);
+        $access_token = $this->_the_pm_instance->get_extra_meta('Domain::META_KEY_STRIPE_SECRET_KEY', true);
         if (! empty($access_token)) {
             return true;
         }

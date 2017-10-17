@@ -1,4 +1,6 @@
-<?php if ( ! defined('EVENT_ESPRESSO_VERSION') ) { exit('No direct script access allowed'); }
+<?php use EventEspresso\Stripe\domain\Domain;
+
+if ( ! defined('EVENT_ESPRESSO_VERSION') ) { exit('No direct script access allowed'); }
 
 /**
  *
@@ -54,13 +56,13 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 	public function generate_new_settings_form() {
 		$pms_form = new EE_Payment_Method_Form( array(
 			'extra_meta_inputs' => array(
-				'stripe_secret_key' => new EE_Text_Input( array(
+				Domain::META_KEY_SECRET_KEY      => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Secret Key %s", "event_espresso"), $this->get_help_tab_link() )
 				)),
-				'publishable_key' => new EE_Text_Input( array(
+				Domain::META_KEY_PUBLISHABLE_KEY => new EE_Text_Input( array(
 					'html_label_text' => sprintf( __("Stripe Publishable Key %s", "event_espresso"), $this->get_help_tab_link() )
 				)),
-				'validate_zip' => new EE_Yes_No_Input(
+				'validate_zip'                   => new EE_Yes_No_Input(
 					array(
 						'html_label_text'=> sprintf( __("Validate the billing ZIP code? %s", 'event_espresso'),  $this->get_help_tab_link() ),
 						'default' => false,
@@ -237,7 +239,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 
 		// Data needed in the JS.
 		$trans_args = array(
-			'data_key' => $this->_pm_instance->get_extra_meta( 'publishable_key', TRUE ),
+			'data_key' => $this->_pm_instance->get_extra_meta( Domain::META_KEY_PUBLISHABLE_KEY, TRUE ),
 			'data_name' => EE_Registry::instance()->CFG->organization->get_pretty( 'name' ),
 			'data_image' => $this->_pm_instance->get_extra_meta( 'stripe_logo_url', TRUE, EE_Registry::instance()->CFG->organization->get_pretty( 'logo_url' ) ),
 			//note its expected that we're using string values for 'true' and 'false' here. That's what the Stripe API is working with

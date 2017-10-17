@@ -1,4 +1,7 @@
 <?php
+
+use EventEspresso\Stripe\domain\Domain;
+
 defined('EVENT_ESPRESSO_VERSION') || exit('NO direct script access allowed');
 
 
@@ -113,13 +116,13 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             ! isset(
                 $_GET['webhook_action'],
                 $_GET['access_token'],
-                $_GET['refresh_token'],
-                $_GET['stripe_publishable_key'],
+                $_GET[Domain::META_KEY_REFRESH_TOKEN],
+                $_GET[Domain::META_KEY_PUBLISHABLE_KEY],
                 $_GET['nonce'],
                 $_GET['stripe_slug'],
-                $_GET['stripe_user_id'],
-                $_GET['livemode'],
-                $_GET['client_id']
+                $_GET[Domain::META_KEY_STRIPE_USER_ID],
+                $_GET[Domain::META_KEY_LIVE_MODE],
+                $_GET[Domain::META_KEY_CLIENT_ID]
             )
             || $_GET['webhook_action'] !== 'eeg_stripe_grab_access_token'
         ) {
@@ -139,13 +142,13 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
                 )
             );
         }
-        $stripe->update_extra_meta('stripe_secret_key', sanitize_text_field($_GET['access_token']));
-        $stripe->update_extra_meta('refresh_token', sanitize_text_field($_GET['refresh_token']));
-        $stripe->update_extra_meta('publishable_key', sanitize_text_field($_GET['stripe_publishable_key']));
-        $stripe->update_extra_meta('client_id', sanitize_text_field($_GET['client_id']));
-        $stripe->update_extra_meta('livemode', sanitize_key($_GET['livemode']));
-        $stripe->update_extra_meta('stripe_user_id', sanitize_text_field($_GET['stripe_user_id']));
-        $stripe->update_extra_meta('using_stripe_connect', true);
+        $stripe->update_extra_meta(Domain::META_KEY_SECRET_KEY, sanitize_text_field($_GET['access_token']));
+        $stripe->update_extra_meta(Domain::META_KEY_REFRESH_TOKEN, sanitize_text_field($_GET[Domain::META_KEY_REFRESH_TOKEN]));
+        $stripe->update_extra_meta(Domain::META_KEY_PUBLISHABLE_KEY, sanitize_text_field($_GET[Domain::META_KEY_PUBLISHABLE_KEY]));
+        $stripe->update_extra_meta(Domain::META_KEY_CLIENT_ID, sanitize_text_field($_GET[Domain::META_KEY_CLIENT_ID]));
+        $stripe->update_extra_meta(Domain::META_KEY_LIVE_MODE, sanitize_key($_GET[Domain::META_KEY_LIVE_MODE]));
+        $stripe->update_extra_meta(Domain::META_KEY_STRIPE_USER_ID, sanitize_text_field($_GET[Domain::META_KEY_STRIPE_USER_ID]));
+        $stripe->update_extra_meta(Domain::META_KEY_USING_STRIPE_CONNECT, true);
         // Write JS to pup-up window to close it and refresh the parent.
         EED_Stripe_Connect_OAuth_Middleman::close_oauth_window('');
     }
@@ -186,7 +189,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             array(
                 'webhook_action' => 'eeg_stripe_grab_access_token',
                 'stripe_slug'    => $stripe_slug,
-                'livemode'       => ! ($stripe->debug_mode() || (isset($_POST['debug_mode']) && $_POST['debug_mode']))
+                Domain::META_KEY_LIVE_MODE       => ! ($stripe->debug_mode() || (isset($_POST['debug_mode']) && $_POST['debug_mode']))
                     ? 1
                     : 0,
                 'nonce'          => wp_create_nonce('eeg_stripe_grab_access_token'),
@@ -247,7 +250,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             );
             exit();
         }
-        $stripe_user_id = $stripe->get_extra_meta('stripe_user_id', true);
+        $stripe_user_id = $stripe->get_extra_meta(Domain::META_KEY_STRIPE_USER_ID, true);
         if (! $stripe_user_id) {
             echo wp_json_encode(
                 array(
@@ -256,7 +259,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             );
             exit();
         }
-        $client_id = $stripe->get_extra_meta('client_id', true);
+        $client_id = $stripe->get_extra_meta(Domain::META_KEY_CLIENT_ID, true);
         if (! $client_id) {
             echo wp_json_encode(
                 array(
@@ -271,8 +274,8 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             'redirection' => 5,
             'blocking'    => true,
             'body'        => array(
-                'stripe_user_id' => $stripe_user_id,
-                'client_id'      => $client_id,
+                Domain::META_KEY_STRIPE_USER_ID => $stripe_user_id,
+                Domain::META_KEY_CLIENT_ID      => $client_id,
             ),
         );
         if (defined('LOCAL_MIDDLEMAN_SERVER')) {
@@ -280,7 +283,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         }
         $post_url = EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url() . 'deauthorize';
         //        POST https://connect.eventespresso.dev/stripeconnect/deauthorize
-        // * with body stripe_user_id=123qwe
+        // * with body Domain::META_KEY_STRIPE_USER_ID=123qwe
         // Request the token.
         $response = wp_remote_post($post_url, $post_args);
         if (is_wp_error($response)) {
@@ -311,12 +314,12 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             );
             exit();
         }
-        $stripe->delete_extra_meta('stripe_secret_key');
-        $stripe->delete_extra_meta('refresh_token');
-        $stripe->delete_extra_meta('publishable_key');
-        $stripe->delete_extra_meta('stripe_user_id');
-        $stripe->delete_extra_meta('livemode');
-        $stripe->update_extra_meta('using_stripe_connect', false);
+        $stripe->delete_extra_meta(Domain::META_KEY_SECRET_KEY);
+        $stripe->delete_extra_meta(Domain::META_KEY_REFRESH_TOKEN);
+        $stripe->delete_extra_meta(Domain::META_KEY_PUBLISHABLE_KEY);
+        $stripe->delete_extra_meta(Domain::META_KEY_STRIPE_USER_ID);
+        $stripe->delete_extra_meta(Domain::META_KEY_LIVE_MODE);
+        $stripe->update_extra_meta(Domain::META_KEY_USING_STRIPE_CONNECT, false);
         echo wp_json_encode(
             array(
                 'stripe_success' => true,
@@ -355,7 +358,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
     {
         $submitted_pm = sanitize_key($_POST['submitted_pm']);
         $stripe       = EEM_Payment_Method::instance()->get_one_by_slug($submitted_pm);
-        $access_token = $stripe->get_extra_meta('stripe_secret_key', true);
+        $access_token = $stripe->get_extra_meta(Domain::META_KEY_SECRET_KEY, true);
         $connected    = true;
         if (empty($access_token)) {
             $connected = false;
@@ -412,8 +415,8 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
     public static function add_stripe_connect_button($stripe_form, $payment_method, $pm_instance)
     {
         // If there is an established connection we should check the debug mode on the PM and the connection.
-        $using_stripe_connect = $pm_instance->get_extra_meta('using_stripe_connect', true, false);
-        $connection_live_mode = $pm_instance->get_extra_meta('livemode', true);
+        $using_stripe_connect = $pm_instance->get_extra_meta(Domain::META_KEY_USING_STRIPE_CONNECT, true, false);
+        $connection_live_mode = $pm_instance->get_extra_meta(Domain::META_KEY_LIVE_MODE, true);
         $pm_debug_mode        = $pm_instance->debug_mode();
         if ($using_stripe_connect) {
             if ($connection_live_mode && $pm_debug_mode) {
@@ -458,15 +461,15 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         // Use a filter so that we may enforce showing the fields.
         if (apply_filters(
             'FHEE__EE_PMT_Stripe_Onsite__generate_new_settings_form__hide_key_fields',
-            ! $pm_instance->get_extra_meta('stripe_secret_key', true, false)
+            ! $pm_instance->get_extra_meta(Domain::META_KEY_SECRET_KEY, true, false)
             // exclude fields if connected to remove any confusion
             || $using_stripe_connect
         )
         ) {
             $stripe_form->exclude(
                 array(
-                    'stripe_secret_key',
-                    'publishable_key',
+                    Domain::META_KEY_SECRET_KEY,
+                    Domain::META_KEY_PUBLISHABLE_KEY,
                 )
             );
         }
