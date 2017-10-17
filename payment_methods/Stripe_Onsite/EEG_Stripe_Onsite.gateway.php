@@ -86,6 +86,63 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
         $payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}
+
+    /**
+     * Gets the number of decimal places Stripe expects a currency to have.
+     *
+     * @param string $currency     Accepted currency.
+     * @return int
+     */
+    protected function _get_stripe_decimal_places( $currency = '' ) {
+        if ( ! $currency ) {
+            $currency = EE_Registry::instance()->CFG->currency->code;
+        }
+        switch ( strtoupper( $currency ) ) {
+            // Zero decimal currencies.
+            case 'BIF' :
+            case 'CLP' :
+            case 'DJF' :
+            case 'GNF' :
+            case 'JPY' :
+            case 'KMF' :
+            case 'KRW' :
+            case 'MGA' :
+            case 'PYG' :
+            case 'RWF' :
+            case 'VND' :
+            case 'VUV' :
+            case 'XAF' :
+            case 'XOF' :
+            case 'XPF' :
+                return 0;
+            default :
+                return 2;
+        }
+    }
+
+
+
+    /**
+     * @param float $amount
+     * @return int in the currency's smallest unit (e.g., pennies)
+     */
+    protected function _prepare_amount_for_stripe($amount){
+        return $amount * pow(10, $this->_get_stripe_decimal_places());
+    }
+
+
+
+    /**
+     * Converts an amount from Stripe (in the currency's smallest units) to a
+     * float as used by EE
+     * @param $amount
+     * @return float
+     */
+    protected function _prepare_amount_from_stripe($amount)
+    {
+        return $amount / pow(10, $this->_get_stripe_decimal_places());
+    }
+
 }
 
 // End of file EEG_Stripe_Onsite.gateway.php
