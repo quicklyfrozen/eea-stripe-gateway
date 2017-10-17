@@ -21,7 +21,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
 
 	protected $_publishable_key = NULL;
 
-	protected $_stripe_secret_key = NULL;
+	protected $_secret_key = NULL;
 
 	/**
 	 * All the currencies supported by this gateway. Add any others you like,
@@ -62,7 +62,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
             return $payment;
         }
         $key = apply_filters('FHEE__EEG_Stripe_Onsite__do_direct_payment__use_connected_account_token',
-            $this->_stripe_secret_key, $transaction->payment_method());
+            $this->_secret_key, $transaction->payment_method());
         // Set your secret key.
         Stripe::setApiKey( $key );
         $stripe_data = array(
