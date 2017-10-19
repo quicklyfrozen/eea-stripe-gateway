@@ -1,6 +1,6 @@
 <?php
 
-namespace EventEspresso\Stripe\Domain;
+namespace EventEspresso\Stripe\domain;
 use EE_Payment_Method;
 use EEM_Payment_Method;
 

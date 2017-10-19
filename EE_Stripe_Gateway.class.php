@@ -92,7 +92,7 @@ class EE_Stripe_Gateway extends EE_Addon
     public function initialize_default_data()
     {
         parent::initialize_default_data();
-        $converter = new EventEspresso\Stripe\Domain\ConnectSettingsConverter();
+        $converter = new EventEspresso\Stripe\domain\ConnectSettingsConverter();
         $converter->checkForOldStripeConnectSettings();
     }
 
