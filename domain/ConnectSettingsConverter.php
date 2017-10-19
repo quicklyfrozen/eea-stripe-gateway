@@ -64,7 +64,7 @@ class ConnectSettingsConverter
         //keys are old keys, values are their new keys
         $setting_mapping = array(
             'access_token' => Domain::META_KEY_SECRET_KEY,
-            'stripe_publishable_key' => Domain::META_KEY_PUBLISHABLE_KEY,
+            'connect_publishable_key' => Domain::META_KEY_PUBLISHABLE_KEY,
         );
         foreach ($setting_mapping as $old_setting => $new_setting) {
             $payment_method->update_extra_meta(
@@ -73,6 +73,17 @@ class ConnectSettingsConverter
             );
             $payment_method->delete_extra_meta($old_setting);
         }
+        //client_id is a new one normally retrieved from the EE middleman server
+        //before that, it was just the hardcoded eventmsart client ID
+        if($payment_method->debug_mode()) {
+            $eventsmart_client_id = 'ca_9nUSLWaXbZXK2j18v8TL0sscNAvwF9LX';
+        } else {
+            $eventsmart_client_id = 'ca_9nUSuzBkFMFLvAMGMjGLATgzwexPqJSn';
+        }
+        $payment_method->update_extra_meta(
+            Domain::META_KEY_CLIENT_ID,
+            $eventsmart_client_id
+        );
     }
 }
 // End of file ConnectSettingsConverter.php
