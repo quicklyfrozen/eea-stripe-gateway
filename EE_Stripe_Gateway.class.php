@@ -39,7 +39,6 @@ class EE_Stripe_Gateway extends EE_Addon
                 'admin_callback'       => 'additional_stripe_admin_hooks',
                 // register autoloaders
                 'autoloader_paths'     => array(
-                    'EE_PMT_Base'          => EE_LIBRARIES . 'payment_methods' . DS . 'EE_PMT_Base.lib.php',
                     'EE_PMT_Stripe_Onsite' => EE_STRIPE_PATH . 'payment_methods' . DS . 'Stripe_Onsite'
                                               . DS . 'EE_PMT_Stripe_Onsite.pm.php',
                     'EE_Stripe_OAuth_Form' => EE_STRIPE_PATH . 'forms' . DS . 'EE_Stripe_OAuth_Form.form.php',

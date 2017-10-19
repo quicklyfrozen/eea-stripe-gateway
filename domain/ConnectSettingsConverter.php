@@ -25,13 +25,18 @@ class ConnectSettingsConverter
     /**
      * Checks for Stripe payment methods in the database that use the old Stripe Connect settings.
      * If nothing needs to be converted, this just takes the time to run the query
+     *
+     * @throws \EE_Error
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \InvalidArgumentException
      */
     public function checkForOldStripeConnectSettings()
     {
         $stripe_pm_with_old_connect_data = EEM_Payment_Method::instance()->get_all(
             array(
                 array(
-                    'PMD_type'            => 'Stripe',
+                    'PMD_type'            => 'Stripe_Onsite',
                     'Extra_Meta.EXM_type' => 'Payment_Method',
                     'Extra_Meta.EXM_key'  => 'access_token',
                 )
@@ -49,8 +54,10 @@ class ConnectSettingsConverter
 
     /**
      * Moves the stripe configuration data from the options we used to use to the new ones
+     *
      * @param EE_Payment_Method $payment_method
      * @return void
+     * @throws \EE_Error
      */
     public function convertOldStripeConnectSettings(EE_Payment_Method $payment_method)
     {
@@ -59,16 +66,14 @@ class ConnectSettingsConverter
             'access_token' => Domain::META_KEY_SECRET_KEY,
             'stripe_publishable_key' => Domain::META_KEY_PUBLISHABLE_KEY,
         );
-        foreach($setting_mapping as $old_setting => $new_setting) {
+        foreach ($setting_mapping as $old_setting => $new_setting) {
             $payment_method->update_extra_meta(
                 $new_setting,
-                $payment_method->get_extra_meta($old_setting)
+                $payment_method->get_extra_meta($old_setting, true)
             );
             $payment_method->delete_extra_meta($old_setting);
         }
     }
-
-
 }
 // End of file ConnectSettingsConverter.php
 // Location: EventEspresso\Stripe\Domain/ConnectSettingsConverter.php
