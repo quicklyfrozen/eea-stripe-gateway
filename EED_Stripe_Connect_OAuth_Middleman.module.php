@@ -345,7 +345,8 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
     public static function stripe_connect_middleman_base_url()
     {
         $middleman_server_tld = defined('LOCAL_MIDDLEMAN_SERVER') ? 'dev' : 'com';
-        return 'https://connect.eventespresso.' . $middleman_server_tld . '/stripeconnect/';
+        $path = apply_filters('FHEE__EED_Stripe_Connect_OAuth_Middleman__stripe_connect_middleman_base_url__path', 'stripeconnect');
+        return 'https://connect.eventespresso.' . $middleman_server_tld . '/' . $path . '/';
     }
 
 
