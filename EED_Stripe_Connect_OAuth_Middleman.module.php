@@ -111,25 +111,30 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
      */
     public static function request_access()
     {
-        // Check if this is the webhook we expect and if all the needed parameters are present.
+        // Check if this is the webhook for Stripe Connect
         if (
             ! isset(
                 $_GET['webhook_action'],
+                $_GET['nonce']
+            )
+            || $_GET['webhook_action'] !== 'eeg_stripe_grab_access_token'
+        ) {
+            //ignore it
+            return;
+        }
+        // Check that we have all the required parameters and the nonce is ok.
+        if (! isset(
                 $_GET['access_token'],
                 $_GET[Domain::META_KEY_REFRESH_TOKEN],
                 $_GET[Domain::META_KEY_PUBLISHABLE_KEY],
-                $_GET['nonce'],
                 $_GET['stripe_slug'],
                 $_GET[Domain::META_KEY_STRIPE_USER_ID],
                 $_GET[Domain::META_KEY_LIVE_MODE],
                 $_GET[Domain::META_KEY_CLIENT_ID]
             )
-            || $_GET['webhook_action'] !== 'eeg_stripe_grab_access_token'
+            || ! wp_verify_nonce($_GET['nonce'], 'eeg_stripe_grab_access_token')
         ) {
-            return;
-        }
-        // Check the nonce.
-        if (! wp_verify_nonce($_GET['nonce'], 'eeg_stripe_grab_access_token')) {
+            //this is an error. Close the window outright
             EED_Stripe_Connect_OAuth_Middleman::close_oauth_window(esc_html__('Nonce fail!', 'event_espresso'));
         }
         // Get pm data.

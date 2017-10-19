@@ -93,20 +93,10 @@ class EE_Stripe_Gateway extends EE_Addon
     public function initialize_default_data()
     {
         parent::initialize_default_data();
-        // Update the currencies supported by this gateway (if changed).
-        $stripe = EEM_Payment_method::instance()->get_one_of_type('Stripe_Onsite');
-        // Update If the payment method already exists.
-        if ($stripe) {
-            $currencies  = $stripe->get_all_usable_currencies();
-            $all_related = $stripe->get_many_related('Currency');
-            if ($currencies !== $all_related) {
-                $stripe->_remove_relations('Currency');
-                foreach ($currencies as $currency_obj) {
-                    $stripe->_add_relation_to($currency_obj, 'Currency');
-                }
-            }
-        }
+        $converter = new EventEspresso\Stripe\Domain\ConnectSettingsConverter();
+        $converter->checkForOldStripeConnectSettings();
     }
+
 
 
     /**

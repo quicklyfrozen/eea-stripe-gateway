@@ -67,6 +67,8 @@ class Domain
      * If it doesn't exist, they were manually entered.
      */
     const META_KEY_USING_STRIPE_CONNECT = 'using_stripe_connect';
+
+
 }
 // End of file Domain.php
 // Location: domain/Domain.php
