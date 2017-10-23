@@ -1,4 +1,5 @@
-<?php use EventEspresso\Stripe\domain\Domain;
+<?php
+use EventEspresso\Stripe\domain\Domain;
 
 if (! defined('EVENT_ESPRESSO_VERSION')) {
     exit('No direct script access allowed');
@@ -235,7 +236,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
         if (! $this->_the_pm_instance) {
             return false;
         }
-        $access_token = $this->_the_pm_instance->get_extra_meta('Domain::META_KEY_STRIPE_SECRET_KEY', true);
+        $access_token = $this->_the_pm_instance->get_extra_meta(Domain::META_KEY_SECRET_KEY, true);
         if (! empty($access_token)) {
             return true;
         }

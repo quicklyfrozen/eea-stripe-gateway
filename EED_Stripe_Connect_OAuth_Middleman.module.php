@@ -209,8 +209,9 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             array(
                 'scope'      => 'read_write',
                 'return_url' => rawurlencode($redirect_uri),
+                'modal' => true
             ),
-            EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url() . 'forward'
+            EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url($stripe) . 'forward'
         );
         echo wp_json_encode(
             array(
@@ -286,7 +287,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         if (defined('LOCAL_MIDDLEMAN_SERVER')) {
             $post_args['sslverify'] = false;
         }
-        $post_url = EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url() . 'deauthorize';
+        $post_url = EED_Stripe_Connect_OAuth_Middleman::stripe_connect_middleman_base_url($stripe) . 'deauthorize';
         //        POST https://connect.eventespresso.dev/stripeconnect/deauthorize
         // * with body Domain::META_KEY_STRIPE_USER_ID=123qwe
         // Request the token.
@@ -339,13 +340,15 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
      * Gets the base URL to all the Stripe Connect middleman services for Event Espresso.
      * If LOCAL_MIDDLEMAN_SERVER is defined, tries to send requests to connect.eventespresso.dev
      * which can be a local instance of EE connect.
-     *
+     * @param EE_Payment_Method $stripe
      * @return string
      */
-    public static function stripe_connect_middleman_base_url()
+    public static function stripe_connect_middleman_base_url(EE_Payment_Method $payment_method)
     {
         $middleman_server_tld = defined('LOCAL_MIDDLEMAN_SERVER') ? 'dev' : 'com';
-        $path = apply_filters('FHEE__EED_Stripe_Connect_OAuth_Middleman__stripe_connect_middleman_base_url__path', 'stripeconnect');
+        $stripe_account_indicator = defined('EE_STRIPE_CONNECT_ACCOUNT_INDICATOR') ? EE_STRIPE_CONNECT_ACCOUNT_INDICATOR : 'ee';
+        $testing_postfix = $payment_method->debug_mode() ? '_test' : '';
+        $path = 'stripe_' . $stripe_account_indicator . $testing_postfix;
         return 'https://connect.eventespresso.' . $middleman_server_tld . '/' . $path . '/';
     }
 

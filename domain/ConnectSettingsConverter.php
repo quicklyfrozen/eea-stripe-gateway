@@ -75,10 +75,22 @@ class ConnectSettingsConverter
         }
         //client_id is a new one normally retrieved from the EE middleman server
         //before that, it was just the hardcoded eventmsart client ID
-        if($payment_method->debug_mode()) {
-            $eventsmart_client_id = 'ca_9nUSLWaXbZXK2j18v8TL0sscNAvwF9LX';
+        if($payment_method->debug_mode() && defined('EE_SAAS_STRIPE_CONNECT_TEST_CLIENT_ID')) {
+            $eventsmart_client_id = EE_SAAS_STRIPE_CONNECT_TEST_CLIENT_ID;
+        } elseif(! $payment_method->debug_mode() && defined('EE_SAAS_STRIPE_CONNECT_CLIENT_ID')) {
+            $eventsmart_client_id = EE_SAAS_STRIPE_CONNECT_CLIENT_ID;
         } else {
-            $eventsmart_client_id = 'ca_9nUSuzBkFMFLvAMGMjGLATgzwexPqJSn';
+            //so, you were using our unreleased plugin for Stripe Connect but don't have the connection
+            //defined anywhere? That shouldn't happen
+            \EE_Error::add_error(
+                esc_html__(
+                    // @codingStandardsIgnoreStart
+                    'We could not convert your old Stripe Connect data to its new format because you don\'t have the necessary constants defined.',
+                    // @codingStandardsIgnoreEnd
+                    'event_espresso'
+                )
+            );
+            $eventsmart_client_id = '';
         }
         $payment_method->update_extra_meta(
             Domain::META_KEY_CLIENT_ID,
