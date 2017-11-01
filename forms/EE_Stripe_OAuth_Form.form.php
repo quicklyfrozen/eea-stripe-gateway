@@ -237,7 +237,8 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
             return false;
         }
         $access_token = $this->_the_pm_instance->get_extra_meta(Domain::META_KEY_SECRET_KEY, true);
-        if (! empty($access_token)) {
+        $using_connect = $this->_the_pm_instance->get_extra_meta(Domain::META_KEY_USING_STRIPE_CONNECT, true, false);
+        if (! empty($access_token) && $using_connect) {
             return true;
         }
         return false;
