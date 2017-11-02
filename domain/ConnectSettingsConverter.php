@@ -64,10 +64,7 @@ class ConnectSettingsConverter
             /**
              * @var $payment_method_obj EE_Payment_Method
              */
-            call_user_func(
-                array($this,$method_to_convert),
-                $payment_method_obj
-            );
+            $this->{$method_to_convert}($payment_method_obj);
         }
     }
 
