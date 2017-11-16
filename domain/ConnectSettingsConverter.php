@@ -132,9 +132,10 @@ class ConnectSettingsConverter
      *
      * @param array $settings_mapping keys are the old extra meta key, and values are the new key.
      *                                If the value is null, it means the key should simply be removed.
+     * @param EE_Payment_method $payment_method
      * @throws \EE_Error
      */
-    protected function convertSettings($settings_mapping, EE_Payment_Method $payment_method)
+    protected function convertSettings(array $settings_mapping, EE_Payment_Method $payment_method)
     {
         foreach ($settings_mapping as $old_setting => $new_setting) {
             if ($new_setting) {
