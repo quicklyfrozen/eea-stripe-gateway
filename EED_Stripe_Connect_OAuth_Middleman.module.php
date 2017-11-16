@@ -184,6 +184,23 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         }
         $stripe_slug = sanitize_key($_POST['submitted_pm']);
         $stripe      = EEM_Payment_Method::instance()->get_one_by_slug($stripe_slug);
+        //if they changed the debug mode value without saving beforehand, just save that.
+        //It simplifies the rest of this process having debug mode correct, and
+        //it's likely they won't save after the oauth process is complete either
+        if (array_key_exists('debug_mode', $_POST)
+            && in_array(
+                $_POST['debug_mode'],
+                array('0','1'),
+                true
+            )
+            && $stripe->debug_mode() !== (int)$_POST['debug_mode']
+        ) {
+            $stripe->save(
+                array(
+                    'PMD_debug_mode' => $_POST['debug_mode']
+                )
+            );
+        }
         if (! $stripe instanceof EE_Payment_Method) {
             $err_msg = __('Could not specify the payment method.', 'event_espresso');
             echo wp_json_encode(array('stripe_error' => $err_msg));
@@ -194,9 +211,7 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
             array(
                 'webhook_action' => 'eeg_stripe_grab_access_token',
                 'stripe_slug'    => $stripe_slug,
-                Domain::META_KEY_LIVE_MODE       => ! ($stripe->debug_mode() || (isset($_POST['debug_mode']) && $_POST['debug_mode']))
-                    ? 1
-                    : 0,
+                Domain::META_KEY_LIVE_MODE       => $stripe->debug_mode() ? '0' : '1',
                 'nonce'          => wp_create_nonce('eeg_stripe_grab_access_token'),
             ),
             site_url()
