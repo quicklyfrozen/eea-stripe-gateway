@@ -13,7 +13,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit;
  *
  * @package       Event Espresso
  * @author        Mike Nelson
- * @since         1.2.0
+ * @since         1.1.0
  */
 class Domain
 {
