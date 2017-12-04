@@ -383,8 +383,9 @@ class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
         $submitted_pm = sanitize_key($_POST['submitted_pm']);
         $stripe       = EEM_Payment_Method::instance()->get_one_by_slug($submitted_pm);
         $access_token = $stripe->get_extra_meta(Domain::META_KEY_SECRET_KEY, true);
+        $using_connect = $stripe->get_extra_meta(Domain::META_KEY_USING_STRIPE_CONNECT, true);
         $connected    = true;
-        if (empty($access_token)) {
+        if (empty($access_token) || ! $using_connect) {
             $connected = false;
         }
         echo wp_json_encode(
