@@ -130,14 +130,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			}
 		}
 		if ( isset( $extra_args['amount_owing' ] )) {
-			$amount = $extra_args[ 'amount_owing' ] * 100;
+			$amount = $extra_args[ 'amount_owing' ];
 		} else {
 			// If this is a partial payment..
-			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() ) * 100;
-			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() ) * 100;
+			$total = EEH_Money::convert_to_float_from_localized_money( $transaction->total() );
+			$paid = EEH_Money::convert_to_float_from_localized_money( $transaction->paid() );
 			$owning = $total - $paid;
 			$amount = ( $owning > 0 ) ? $owning : $total;
 		}
+		$amount = $this->_gateway->prepare_amount_for_stripe($amount);
 
 		return new EE_Billing_Info_Form(
 			$this->_pm_instance,
@@ -252,6 +253,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base {
 			'no_SPCO_error' => __( 'It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'no_StripeCheckout_error' => __( 'It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso' ),
 			'payment_method_slug' => $this->_pm_instance->slug(),
+            'unit_to_subunit_conversion' => pow(10, $this->_gateway->get_stripe_decimal_places(EE_Registry::instance()->CFG->currency->code))
 		);
 		if ( $this->_pm_instance->debug_mode() ) {
 			$trans_args['data_cc_number'] = '4242424242424242';

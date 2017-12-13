@@ -54,7 +54,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
         // Set your secret key.
         Stripe::setApiKey( $key );
         $stripe_data = array(
-            'amount' => str_replace( array(',', '.'), '', number_format( $payment->amount(), 2) ),
+            'amount' => $this->prepare_amount_for_stripe($payment->amount()),
             'currency' => $payment->currency_code(),
             'card' => $billing_info['ee_stripe_token'],
             'description' => $billing_info['ee_stripe_prod_description']
@@ -82,7 +82,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
         $payment->set_gateway_response( $charge_array['status'] );
         $payment->set_txn_id_chq_nmbr( $charge_array['id'] );
         $payment->set_details( $charge_array );
-        $payment->set_amount( floatval( $charge_array['amount'] / 100 ) );
+        $payment->set_amount( floatval( $this->prepare_amount_from_stripe($charge_array['amount']) ) );
         $payment->set_status( $this->_pay_model->approved_status() );
 		return $payment;
 	}
@@ -93,7 +93,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
      * @param string $currency     Accepted currency.
      * @return int
      */
-    protected function _get_stripe_decimal_places( $currency = '' ) {
+    public function get_stripe_decimal_places($currency = '' ) {
         if ( ! $currency ) {
             $currency = EE_Registry::instance()->CFG->currency->code;
         }
@@ -126,8 +126,8 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
      * @param float $amount
      * @return int in the currency's smallest unit (e.g., pennies)
      */
-    protected function _prepare_amount_for_stripe($amount){
-        return $amount * pow(10, $this->_get_stripe_decimal_places());
+    public function prepare_amount_for_stripe($amount){
+        return $amount * pow(10, $this->get_stripe_decimal_places());
     }
 
 
@@ -138,9 +138,9 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway {
      * @param $amount
      * @return float
      */
-    protected function _prepare_amount_from_stripe($amount)
+    public function prepare_amount_from_stripe($amount)
     {
-        return $amount / pow(10, $this->_get_stripe_decimal_places());
+        return $amount / pow(10, $this->get_stripe_decimal_places());
     }
 
 }
