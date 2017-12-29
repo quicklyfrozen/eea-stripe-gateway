@@ -27,6 +27,9 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
     /**
      *
      * @param EE_Payment_Method $pm_instance
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
      * @throws \EE_Error
      * @return \EE_PMT_Stripe_Onsite
      */
@@ -55,6 +58,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      * Generate a new payment settings form.
      *
      * @return EE_Payment_Method_Form
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EE_Error
      */
     public function generate_new_settings_form()
     {
@@ -122,6 +129,12 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      * Creates a billing form for this payment method type.
      * @param \EE_Transaction $transaction
      * @return \EE_Billing_Info_Form
+     * @throws \ReflectionException
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidIdentifierException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EE_Error
      */
     public function generate_new_billing_form(EE_Transaction $transaction = NULL, $extra_args = array())
     {
@@ -143,7 +156,8 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
             $owning = $total - $paid;
             $amount = ($owning > 0) ? $owning : $total;
         }
-        $amount = $this->_gateway->prepare_amount_for_stripe($amount);
+        $money = $this->money_factory->createForSite($amount);
+        $subunit_amount = $money->amountInSubunits();
 
         return new EE_Billing_Info_Form(
             $this->_pm_instance,
@@ -173,7 +187,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
                         array(
                             'html_id' => 'ee-stripe-transaction-total',
                             'html_name' => 'eeTransactionTotal',
-                            'default' => $amount,
+                            'default' => $subunit_amount,
                             'validation_strategies' => array(new EE_Float_Validation_Strategy())
                         )
                     ),
@@ -194,6 +208,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Possibly adds debug content to Stripe billing form.
      *
      * @return string
+     * @throws \EE_Error
      */
     public function generate_billing_form_debug_content()
     {
@@ -218,6 +233,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Use Stripe's Embedded form.
      *
      * @return EE_Form_Section_Proper
+     * @throws \EE_Error
      */
     public function stripe_embedded_form()
     {
@@ -239,6 +255,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Load all the scripts needed for the Stripe checkout.
      *
      * @return void
+     * @throws \EE_Error
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
      */
     public function enqueue_stripe_payment_scripts()
     {
@@ -261,7 +281,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
             'no_SPCO_error' => __('It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
             'no_StripeCheckout_error' => __('It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
             'payment_method_slug' => $this->_pm_instance->slug(),
-            'unit_to_subunit_conversion' => pow(10, $this->_gateway->get_stripe_decimal_places(EE_Registry::instance()->CFG->currency->code))
+            'unit_to_subunit_conversion' => pow(
+                10,
+                $this->currency_factory->createFromCode(EE_Registry::instance()->CFG->currency->code)->decimalPlaces()
+            )
         );
         if ($this->_pm_instance->debug_mode()) {
             $trans_args['data_cc_number'] = '4242424242424242';
@@ -299,6 +322,10 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      * Log Stripe TXN Error.
      *
      * @return void
+     * @throws \InvalidArgumentException
+     * @throws \EventEspresso\core\exceptions\InvalidInterfaceException
+     * @throws \EventEspresso\core\exceptions\InvalidDataTypeException
+     * @throws \EE_Error
      */
     public static function log_stripe_error()
     {
