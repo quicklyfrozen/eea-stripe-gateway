@@ -86,8 +86,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
         // Set your secret key.
         Stripe::setApiKey($key);
         $stripe_data = array(
-            'amount' => $this->prepare_amount_for_stripe($payment->amount()),
-
+            'amount' => $payment->amountInSubunits(),
             'currency' => $payment->currency_code(),
             'card' => $billing_info['ee_stripe_token'],
             'description' => $billing_info['ee_stripe_prod_description']
@@ -115,47 +114,9 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
         $payment->set_gateway_response($charge_array['status']);
         $payment->set_txn_id_chq_nmbr($charge_array['id']);
         $payment->set_details($charge_array);
-        $payment->set_amount(floatval($this->prepare_amount_from_stripe($charge_array['amount'])));
+        $payment->setAmountInSubunits($charge_array['amount']);
         $payment->set_status($this->_pay_model->approved_status());
         return $payment;
-    }
-
-    /**
-     * Gets the number of decimal places Stripe expects a currency to have.
-     *
-     * @param string $currency_code Accepted currency.
-     * @return int
-     */
-    public function get_stripe_decimal_places($currency_code = '')
-    {
-
-        if (!$currency_code) {
-            $currency_code = EE_Registry::instance()->CFG->currency->code;
-        }
-        $currency = $this->currency_factory->createFromCode($currency_code);
-        return $currency->decimalPlaces();
-    }
-
-
-    /**
-     * @param float $amount
-     * @return int in the currency's smallest unit (e.g., pennies)
-     */
-    public function prepare_amount_for_stripe($amount)
-    {
-        return $amount * pow(10, $this->get_stripe_decimal_places());
-    }
-
-
-    /**
-     * Converts an amount from Stripe (in the currency's smallest units) to a
-     * float as used by EE
-     * @param $amount
-     * @return float
-     */
-    public function prepare_amount_from_stripe($amount)
-    {
-        return $amount / pow(10, $this->get_stripe_decimal_places());
     }
 }
 
