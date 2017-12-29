@@ -34,7 +34,7 @@ class EE_Stripe_Gateway extends EE_Addon
             'Stripe_Gateway',
             array(
                 'version'              => EE_STRIPE_VERSION,
-                'min_core_version'     => '4.9.26.rc.000',
+                'min_core_version'     => '4.9.54.rc.034',
                 'main_file_path'       => EE_STRIPE_PLUGIN_FILE,
                 'admin_callback'       => 'additional_stripe_admin_hooks',
                 // register autoloaders
