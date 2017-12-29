@@ -18,6 +18,8 @@
 
 use EEA_Stripe\Stripe;
 use EEA_Stripe\Stripe_Charge;
+use EventEspresso\core\services\currency\CurrencyFactory;
+use EventEspresso\core\services\loaders\LoaderFactory;
 
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway
 {
@@ -27,11 +29,23 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
     protected $_secret_key = NULL;
 
     /**
+     * @var CurrencyFactory
+     */
+    protected $currency_factory;
+    /**
      * All the currencies supported by this gateway. Add any others you like,
      * as contained in the esp_currency table
      * @var array
      */
     protected $_currencies_supported = EE_Gateway::all_currencies_supported;
+
+    public function __construct( CurrencyFactory $currency_factory = null)
+    {
+        if (! $currency_factory instanceof  CurrencyFactory) {
+            $currency_factory = LoaderFactory::getLoader()->getShared('EventEspresso\core\services\currency\CurrencyFactory');
+        }
+        $this->currency_factory = $currency_factory;
+    }
 
     /**
      *
@@ -109,35 +123,17 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
     /**
      * Gets the number of decimal places Stripe expects a currency to have.
      *
-     * @param string $currency Accepted currency.
+     * @param string $currency_code Accepted currency.
      * @return int
      */
-    public function get_stripe_decimal_places($currency = '')
+    public function get_stripe_decimal_places($currency_code = '')
     {
-        if (!$currency) {
-            $currency = EE_Registry::instance()->CFG->currency->code;
+
+        if (!$currency_code) {
+            $currency_code = EE_Registry::instance()->CFG->currency->code;
         }
-        switch (strtoupper($currency)) {
-            // Zero decimal currencies.
-            case 'BIF' :
-            case 'CLP' :
-            case 'DJF' :
-            case 'GNF' :
-            case 'JPY' :
-            case 'KMF' :
-            case 'KRW' :
-            case 'MGA' :
-            case 'PYG' :
-            case 'RWF' :
-            case 'VND' :
-            case 'VUV' :
-            case 'XAF' :
-            case 'XOF' :
-            case 'XPF' :
-                return 0;
-            default :
-                return 2;
-        }
+        $currency = $this->currency_factory->createFromCode($currency_code);
+        return $currency->decimalPlaces();
     }
 
 
