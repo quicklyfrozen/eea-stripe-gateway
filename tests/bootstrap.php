@@ -15,7 +15,7 @@ require $core_tests_dir . 'includes/AddonLoader.php';
 
 define('EEA_STRIPE_PLUGIN_DIR', dirname(dirname(__FILE__)) . '/');
 define('EEA_STRIPE_TESTS_DIR', EEA_STRIPE_PLUGIN_DIR . 'tests/');
-
+define('EE_SAAS_STRIPE_CONNECT_CLIENT_ID', 'whydidthechickencrosstheroadtogettotheotherside');
 
 $addon_loader = new AddonLoader(
     EEA_STRIPE_TESTS_DIR,
