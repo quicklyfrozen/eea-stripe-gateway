@@ -1,4 +1,10 @@
-<?php if (!defined('EVENT_ESPRESSO_VERSION')) {
+<?php
+use EEA_Stripe\Stripe;
+use EEA_Stripe\Stripe_Charge;
+use EventEspresso\core\services\currency\CurrencyFactory;
+use EventEspresso\core\services\loaders\LoaderFactory;
+
+if (!defined('EVENT_ESPRESSO_VERSION')) {
     exit('No direct script access allowed');
 }
 
@@ -15,12 +21,6 @@
  * @author            Event Espresso
  *
  */
-
-use EEA_Stripe\Stripe;
-use EEA_Stripe\Stripe_Charge;
-use EventEspresso\core\services\currency\CurrencyFactory;
-use EventEspresso\core\services\loaders\LoaderFactory;
-
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway
 {
 
