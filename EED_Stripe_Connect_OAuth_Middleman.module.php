@@ -12,7 +12,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('NO direct script access allowed');
  * @package        Event Espresso
  * @subpackage     espresso-stripe-connect
  * @author         Event Espresso
- * @version        $VID:$
+ *
  */
 class EED_Stripe_Connect_OAuth_Middleman extends EED_Module
 {
