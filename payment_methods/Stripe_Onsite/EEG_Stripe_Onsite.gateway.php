@@ -32,6 +32,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
      * @var CurrencyFactory
      */
     protected $currency_factory;
+    
     /**
      * All the currencies supported by this gateway. Add any others you like,
      * as contained in the esp_currency table
@@ -39,12 +40,17 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
      */
     protected $_currencies_supported = EE_Gateway::all_currencies_supported;
 
+    /**
+     * EEG_Stripe_Onsite constructor.
+     * @param CurrencyFactory|null $currency_factory
+     */
     public function __construct( CurrencyFactory $currency_factory = null)
     {
         if (! $currency_factory instanceof  CurrencyFactory) {
             $currency_factory = LoaderFactory::getLoader()->getShared('EventEspresso\core\services\currency\CurrencyFactory');
         }
         $this->currency_factory = $currency_factory;
+        parent::__construct();
     }
 
     /**
