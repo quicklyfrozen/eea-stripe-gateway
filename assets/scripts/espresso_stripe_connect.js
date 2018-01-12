@@ -182,7 +182,7 @@ jQuery(document).ready(function($) {
                     this_passed_in.oauth_send_request('eeg_request_stripe_connect_data');
                 } else {
                     console.log(this_passed_in.translations.unknown_container);
-                }``
+                }
             });
 
             // Stripe Disconnect.
