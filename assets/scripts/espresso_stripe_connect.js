@@ -52,19 +52,19 @@ jQuery(document).ready(function($) {
      * }}
      */
     function EegStripeConnect (stripe_instance_vars, translations) {
-        this.slug = stripe_instance_vars.payment_method_slug;
-        this.oauth_window = null;
-        this.initialized=       false;
-        this.connect_btn=       {};
-        this.disconnect_btn=    {};
-        this.form = {};
-        this.connect_btn_id=    '#eeg_stripe_connect_btn_' + this.slug;
-        this.disconnect_btn_id= '#eeg_stripe_disconnect_btn_' + this.slug;
-        this.form_id = '#' + stripe_instance_vars.form_id;
-        this.redirect_url=      'https://connect.stripe.com/oauth/authorize?response_type=code&scope=read_write';
-        this.submitted_pm=      '';
-        this.debug_mode=        '0';
-        this.translations=     {};
+        this.slug              = stripe_instance_vars.payment_method_slug;
+        this.oauth_window      = null;
+        this.initialized       = false;
+        this.connect_btn       = {};
+        this.disconnect_btn    = {};
+        this.form              = {};
+        this.connect_btn_id    = '#eeg_stripe_connect_btn_' + this.slug;
+        this.disconnect_btn_id = '#eeg_stripe_disconnect_btn_' + this.slug;
+        this.form_id           = '#' + stripe_instance_vars.form_id;
+        this.redirect_url      = 'https://connect.stripe.com/oauth/authorize?response_type=code&scope=read_write';
+        this.submitted_pm      = '';
+        this.debug_mode        = '0';
+        this.translations      = {};
 
         /**
          * @function
@@ -74,8 +74,8 @@ jQuery(document).ready(function($) {
             this.initialize_objects();
             // Stripe selected / initialized ?
             if (!this.connect_btn.length ||
-                 !this.disconnect_btn.length ||
-                 this.initialized
+                !this.disconnect_btn.length ||
+                this.initialized
             ) {
                 return;
             }
@@ -368,7 +368,7 @@ jQuery(document).ready(function($) {
                 // Update the connection status if window was closed action.
                 var this_passed_in = this;
                 this.oauth_window_timer    = setInterval(
-                    function(){
+                    function() {
                         this_passed_in.check_oauth_window();
                     },
                     500
@@ -424,7 +424,7 @@ jQuery(document).ready(function($) {
     }
     //ok let's get the ball rolling
     var stripe_connect_objs = {};
-    for( var slug in ee_form_section_vars.stripe_connect) {
+    for (var slug in ee_form_section_vars.stripe_connect) {
         stripe_connect_objs[slug] = new EegStripeConnect(ee_form_section_vars.stripe_connect[slug], EEG_STRIPE_CONNECT_ARGS);
         stripe_connect_objs[slug].initialize();
     }
