@@ -1,5 +1,5 @@
 <?php
-namespace EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms;
+namespace EventEspresso\Stripe\forms;
 use EE_Attendee;
 use EE_Billing_Info_Form;
 use EE_Email_Validation_Strategy;

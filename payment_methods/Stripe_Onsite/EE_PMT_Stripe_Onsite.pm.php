@@ -1,5 +1,6 @@
-    <?php use EventEspresso\Stripe\domain\Domain;
-
+<?php
+use EventEspresso\Stripe\domain\Domain;
+use EventEspresso\Stripe\forms\BillingForm;
 if (!defined('EVENT_ESPRESSO_VERSION')) {
     exit('No direct script access allowed');
 }
@@ -124,7 +125,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
     public function generate_new_billing_form(EE_Transaction $transaction = NULL, $extra_args = array())
     {
         //provide amount_owing and transaction
-        return new EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm(
+        return new BillingForm(
             $this->_pm_instance,
             array_merge(
                 array(
