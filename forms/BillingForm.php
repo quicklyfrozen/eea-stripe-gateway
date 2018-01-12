@@ -78,8 +78,8 @@ class BillingForm extends EE_Billing_Info_Form
                 $email = $transaction->primary_registration()->attendee()->email();
             }
         }
-        if (isset($extra_args['amount_owing'])) {
-            $amount = $extra_args['amount_owing'];
+        if (isset($options_array['amount_owing'])) {
+            $amount = $options_array['amount_owing'];
         } else {
             // If this is a partial payment..
             $total = EEH_Money::convert_to_float_from_localized_money($transaction->total());
