@@ -102,14 +102,14 @@ jQuery(document).ready(function($) {
         this.connect_btn_listeners = function() {
             var $sandbox_mode_select = this.form.find('select[name*=stripe][name*=PMD_debug_mode]');
             // Update connect button text depending on the PM sandbox mode.
-            var this_passed_in = this;
+            var stripe_connect_instance = this;
             $sandbox_mode_select.each(function() {
-                this_passed_in.update_connect_button_text($(this), false);
+                stripe_connect_instance.update_connect_button_text($(this), false);
             });
 
             // Listen for the sandbox mode change.
             $sandbox_mode_select.on('change', function() {
-                this_passed_in.update_connect_button_text($(this), true);
+                stripe_connect_instance.update_connect_button_text($(this), true);
             });
 
             // Connect with Stripe.
@@ -119,10 +119,10 @@ jQuery(document).ready(function($) {
                 var submitting_form  = $(this).parents('form').eq(0)[0];
                 if (button_container && submitting_form) {
                     // Check if window already open.
-                    if (this_passed_in.oauth_window &&
-                         !this_passed_in.oauth_window.closed
+                    if (stripe_connect_instance.oauth_window &&
+                         !stripe_connect_instance.oauth_window.closed
                     ) {
-                        this_passed_in.oauth_window.focus();
+                        stripe_connect_instance.oauth_window.focus();
                         return;
                     }
                     // Need to open the new window now to prevent browser pop-up blocking.
@@ -140,48 +140,48 @@ jQuery(document).ready(function($) {
                         'left=' + (screen.width - wind_width) / 2,
                         'centered=true',
                     ];
-                    this_passed_in.oauth_window = window.open('', 'StripeConnectPopupWindow', parameters.join());
+                    stripe_connect_instance.oauth_window = window.open('', 'StripeConnectPopupWindow', parameters.join());
                     setTimeout(function() {
-                        $(this_passed_in.oauth_window.document.body).html(
+                        $(stripe_connect_instance.oauth_window.document.body).html(
                             '<html><head>' +
                             '<title>Stripe Connect</title>' +
                             '<link rel="stylesheet" type="text/css" href="' +
-                            this_passed_in.translations.espresso_default_styles + '">' +
-                            '<link rel="stylesheet" type="text/css" href="' + this_passed_in.translations.wp_stylesheet +
+                            stripe_connect_instance.translations.espresso_default_styles + '">' +
+                            '<link rel="stylesheet" type="text/css" href="' + stripe_connect_instance.translations.wp_stylesheet +
                             '">' +
                             '</head><body>' +
                             '<div id="espresso-ajax-loading" class="ajax-loading-grey">' +
                             '<span class="ee-spinner ee-spin">' +
                             '</div></body></html>'
                         );
-                        var win_loader           = this_passed_in.oauth_window.document.getElementById(
+                        var win_loader           = stripe_connect_instance.oauth_window.document.getElementById(
                             'espresso-ajax-loading');
                         win_loader.style.display = 'inline-block';
                         win_loader.style.top     = '40%';
                     }, 100);
                     // Check in case the pop-up window was blocked.
-                    if (!this_passed_in.oauth_window
-                        || typeof this_passed_in.oauth_window === 'undefined'
-                        || typeof this_passed_in.oauth_window.closed === 'undefined'
-                        || this_passed_in.oauth_window.closed
+                    if (!stripe_connect_instance.oauth_window
+                        || typeof stripe_connect_instance.oauth_window === 'undefined'
+                        || typeof stripe_connect_instance.oauth_window.closed === 'undefined'
+                        || stripe_connect_instance.oauth_window.closed
                     ) {
-                        this_passed_in.oauth_window = null;
-                        alert(this_passed_in.translations.blocked_popups_notice);
-                        console.log(this_passed_in.translations.blocked_popups_notice);
+                        stripe_connect_instance.oauth_window = null;
+                        alert(stripe_connect_instance.translations.blocked_popups_notice);
+                        console.log(stripe_connect_instance.translations.blocked_popups_notice);
                         return;
                     }
 
                     // Maybe update connected area text.
-                    this_passed_in.update_disconnect_section(submitting_form);
+                    stripe_connect_instance.update_disconnect_section(submitting_form);
 
                     // Continue to the OAuth page.
-                    this_passed_in.submitted_pm = button_container.attr('id').
+                    stripe_connect_instance.submitted_pm = button_container.attr('id').
                         replace(/eeg_stripe_connect_|eeg_stripe_disconnect_/, '');
                     var debug_mode_selector         = submitting_form.querySelector('select[name*=PMD_debug_mode]');
-                    this_passed_in.debug_mode   = debug_mode_selector.value;
-                    this_passed_in.oauth_send_request('eeg_request_stripe_connect_data');
+                    stripe_connect_instance.debug_mode   = debug_mode_selector.value;
+                    stripe_connect_instance.oauth_send_request('eeg_request_stripe_connect_data');
                 } else {
-                    console.log(this_passed_in.translations.unknown_container);
+                    console.log(stripe_connect_instance.translations.unknown_container);
                 }
             });
 
@@ -191,13 +191,13 @@ jQuery(document).ready(function($) {
                 var button_container = $(this).closest('tr');
                 var submitting_form  = $(this).parents('form').eq(0)[0];
                 if (button_container && submitting_form) {
-                    this_passed_in.submitted_pm = button_container.attr('id').
+                    stripe_connect_instance.submitted_pm = button_container.attr('id').
                         replace(/eeg_stripe_connect_|eeg_stripe_disconnect_/, '');
                     var debug_mode_selector         = submitting_form.querySelector('select[name*=PMD_debug_mode]');
-                    this_passed_in.debug_mode   = debug_mode_selector.value;
-                    this_passed_in.oauth_send_request('eeg_request_stripe_disconnect');
+                    stripe_connect_instance.debug_mode   = debug_mode_selector.value;
+                    stripe_connect_instance.oauth_send_request('eeg_request_stripe_disconnect');
                 } else {
-                    console.log(this_passed_in.translations.unknown_container);
+                    console.log(stripe_connect_instance.translations.unknown_container);
                 }
             });
         };
@@ -281,7 +281,7 @@ jQuery(document).ready(function($) {
             request_data.action       = request_action;
             request_data.submitted_pm = this.submitted_pm;
             request_data.debug_mode   = this.debug_mode;
-            var this_passed_in = this;
+            var stripe_connect_instance = this;
             $.ajax({
                 type:     'POST',
                 url:      eei18n.ajax_url,
@@ -292,7 +292,7 @@ jQuery(document).ready(function($) {
                     window.do_before_admin_page_ajax();
                 },
                 success: function(request) {
-                    this_passed_in.oauth_send_request_success(request, request_action);
+                    stripe_connect_instance.oauth_send_request_success(request, request_action);
                 },
                 error:  this.oauth_send_request_error,
             });
@@ -366,10 +366,10 @@ jQuery(document).ready(function($) {
             ) {
                 this.oauth_window.location = request_url;
                 // Update the connection status if window was closed action.
-                var this_passed_in = this;
+                var stripe_connect_instance = this;
                 this.oauth_window_timer    = setInterval(
                     function() {
-                        this_passed_in.check_oauth_window();
+                        stripe_connect_instance.check_oauth_window();
                     },
                     500
                 );
@@ -399,7 +399,7 @@ jQuery(document).ready(function($) {
             req_data.action       = 'eeg_stripe_update_connection_status';
             req_data.submitted_pm = this.submitted_pm;
             req_data.debug_mode   = this.debug_mode;
-            var this_passed_in = this;
+            var stripe_connect_instance = this;
             $.ajax({
                 type:     'POST',
                 url:      eei18n.ajax_url,
@@ -412,11 +412,11 @@ jQuery(document).ready(function($) {
                 success:    function(response) {
                     $('#espresso-ajax-loading').fadeOut('fast');
                     if (response['connected'] === true) {
-                        $('#eeg_stripe_connect_' + this_passed_in.submitted_pm).hide();
-                        $('#eeg_stripe_disconnect_' + this_passed_in.submitted_pm).show();
+                        $('#eeg_stripe_connect_' + stripe_connect_instance.submitted_pm).hide();
+                        $('#eeg_stripe_disconnect_' + stripe_connect_instance.submitted_pm).show();
                     } else {
-                        $('#eeg_stripe_connect_' + this_passed_in.submitted_pm).show();
-                        $('#eeg_stripe_disconnect_' + this_passed_in.submitted_pm).hide();
+                        $('#eeg_stripe_connect_' + stripe_connect_instance.submitted_pm).show();
+                        $('#eeg_stripe_disconnect_' + stripe_connect_instance.submitted_pm).hide();
                     }
                 },
             });
