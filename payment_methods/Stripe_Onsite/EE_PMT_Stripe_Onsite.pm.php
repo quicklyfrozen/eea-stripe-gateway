@@ -142,7 +142,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Possibly adds debug content to Stripe billing form.
      *
      * @return string
-     * @deprecated in $VID:$. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function generate_billing_form_debug_content()
     {
@@ -167,7 +167,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Use Stripe's Embedded form.
      *
      * @return EE_Form_Section_Proper
-     * @deprecated in $VID:$. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function stripe_embedded_form()
     {
@@ -189,7 +189,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Load all the scripts needed for the Stripe checkout.
      *
      * @return void
-     * @deprecated in $VID:$. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function enqueue_stripe_payment_scripts()
     {
