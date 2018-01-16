@@ -28,14 +28,14 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
     /**
      *  Payment method instance.
      *
-     * @var EE_PMT_Base
+     * @var EE_Payment_Method
      */
     protected $_the_pm_instance;
 
     /**
      *  Payment method slug.
      *
-     * @var EE_PMT_Base
+     * @var string
      */
     protected $_pm_slug;
 
@@ -108,7 +108,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
         $livemode_txt = ! $this->_the_pm_instance->get_extra_meta(Domain::META_KEY_LIVE_MODE, true)
             ? ' ' . EEH_HTML::strong(
                 $this->_connected_sandbox_text,
-                'eeg_stripe_test_connected_txt',
+                'eeg_stripe_test_connected_txt_' . $this->_pm_slug,
                 'eeg-stripe-test-connected-txt'
             )
             : '';
@@ -124,7 +124,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
                             '#',
                             EEH_HTML::span($this->_connect_btn_text),
                             '',
-                            'eeg_stripe_connect_btn',
+                            'eeg_stripe_connect_btn_' . $this->_pm_slug,
                             'eeg-stripe-connect-btn'
                         )
                     ),
@@ -141,12 +141,12 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
                         EEH_HTML::img(
                             EE_STRIPE_URL . 'assets' . DS . 'lib' . DS . 'stripe-connected.png',
                             '',
-                            'eeg_stripe_connected_ico',
+                            'eeg_stripe_connected_ico_' . $this->_pm_slug,
                             'eeg-stripe-connected-ico'
                         ) .
                         EEH_HTML::strong(
                             esc_html__('Connected.', 'event_espresso'),
-                            'eeg_stripe_connected_txt',
+                            'eeg_stripe_connected_txt_' . $this->_pm_slug,
                             'eeg-stripe-connected-txt'
                         ) .
                         $livemode_txt .
@@ -154,7 +154,7 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
                             '#',
                             EEH_HTML::span(esc_html__('Disconnect', 'event_espresso')),
                             '',
-                            'eeg_stripe_disconnect_btn',
+                            'eeg_stripe_disconnect_btn_' . $this->_pm_slug,
                             'eeg-stripe-connect-btn light-blue'
                         )
                     ),
@@ -177,7 +177,6 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
     public function enqueue_js()
     {
         $stripe_connect_args = array(
-            'payment_method_slug'       => $this->_pm_slug,
             'request_connection_errmsg' => esc_html__('Error while requesting the redirect URL.', 'event_espresso'),
             'blocked_popups_notice'     => esc_html__(
                 'The authentication process could not be executed. Please allow window pop-ups in your browser for this website in order to process a successful authentication.',
@@ -218,8 +217,12 @@ class EE_Stripe_OAuth_Form extends EE_Form_Section_Proper
             array(),
             EE_STRIPE_VERSION
         );
-        // Localize the script with some extra data.
         wp_localize_script('eea_stripe_connect_form_scripts', 'EEG_STRIPE_CONNECT_ARGS', $stripe_connect_args);
+        // tell the script about each instance of Stripe and where to find it
+        self::$_js_localization['stripe_connect'][$this->_pm_slug] = array(
+            'payment_method_slug'       => $this->_pm_slug,
+            'form_id' => $this->html_id()
+        );
         return parent::enqueue_js();
     }
 
