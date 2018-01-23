@@ -17,6 +17,7 @@
  */
 
 use EEA_Stripe\Stripe;
+use EEA_Stripe\Stripe_CardError;
 use EEA_Stripe\Stripe_Charge;
 
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway
@@ -108,6 +109,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
 
     /**
      * Gets the number of decimal places Stripe expects a currency to have.
+     * See https://stripe.com/docs/currencies#charge-currencies for the list.
      *
      * @param string $currency Accepted currency.
      * @return int
@@ -142,6 +144,8 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
 
 
     /**
+     * Converts an amount into the currency's subunits as expected by Stripe.
+     * (Some currencies have no subunits, so leaves them in the currency's main units).
      * @param float $amount
      * @return int in the currency's smallest unit (e.g., pennies)
      */
@@ -152,7 +156,7 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
 
 
     /**
-     * Converts an amount from Stripe (in the currency's smallest units) to a
+     * Converts an amount from Stripe (in the currency's subunits) to a
      * float as used by EE
      * @param $amount
      * @return float
