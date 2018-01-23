@@ -25,7 +25,7 @@ defined('EVENT_ESPRESSO_VERSION') || exit('No direct script access allowed');
  *
  * @package     Event Espresso
  * @author         Mike Nelson
- * @since         $VID:$
+ * @since         1.1.1.p
  *
  */
 class BillingForm extends EE_Billing_Info_Form
