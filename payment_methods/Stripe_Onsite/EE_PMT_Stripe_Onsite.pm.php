@@ -1,5 +1,7 @@
- <?php use EventEspresso\Stripe\domain\Domain;
 
+<?php
+use EventEspresso\Stripe\domain\Domain;
+use EventEspresso\Stripe\forms\BillingForm;
 if (!defined('EVENT_ESPRESSO_VERSION')) {
     exit('No direct script access allowed');
 }
@@ -46,8 +48,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
         $this->_gateway = new EEG_Stripe_Onsite();
 
         parent::__construct($pm_instance);
-        // Scripts for generating Stripe token.
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_stripe_payment_scripts'));
     }
 
 
@@ -145,46 +145,15 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
         }
         $amount = $this->_gateway->prepare_amount_for_stripe($amount);
 
-        return new EE_Billing_Info_Form(
+        //provide amount_owing and transaction
+        return new BillingForm(
             $this->_pm_instance,
-            array(
-                'name' => 'Stripe_Onsite_Billing_Form',
-                'html_id' => 'ee-Stripe-billing-form',
-                'html_class' => 'ee-billing-form',
-                'subsections' => array(
-                    $this->generate_billing_form_debug_content(),
-                    $this->stripe_embedded_form(),
-                    'ee_stripe_token' => new EE_Hidden_Input(
-                        array(
-                            'html_id' => 'ee-stripe-token',
-                            'html_name' => 'EEA_stripeToken',
-                            'default' => ''
-                        )
-                    ),
-                    'ee_stripe_transaction_email' => new EE_Hidden_Input(
-                        array(
-                            'html_id' => 'ee-stripe-transaction-email',
-                            'html_name' => 'eeTransactionEmail',
-                            'default' => $email,
-                            'validation_strategies' => array(new EE_Email_Validation_Strategy())
-                        )
-                    ),
-                    'ee_stripe_transaction_total' => new EE_Hidden_Input(
-                        array(
-                            'html_id' => 'ee-stripe-transaction-total',
-                            'html_name' => 'eeTransactionTotal',
-                            'default' => $amount,
-                            'validation_strategies' => array(new EE_Float_Validation_Strategy())
-                        )
-                    ),
-                    'ee_stripe_prod_description' => new EE_Hidden_Input(
-                        array(
-                            'html_id' => 'ee-stripe-prod-description',
-                            'html_name' => 'stripeProdDescription',
-                            'default' => apply_filters('FHEE__EE_PMT_Stripe_Onsite__generate_new_billing_form__description', $event_name, $transaction)
-                        )
-                    )
-                )
+            array_merge(
+                array(
+                    'transaction' => $transaction,
+                    'template_path' => $this->_template_path
+                ),
+                $extra_args
             )
         );
     }
@@ -194,6 +163,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Possibly adds debug content to Stripe billing form.
      *
      * @return string
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function generate_billing_form_debug_content()
     {
@@ -218,6 +188,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Use Stripe's Embedded form.
      *
      * @return EE_Form_Section_Proper
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function stripe_embedded_form()
     {
@@ -239,6 +210,7 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
      *  Load all the scripts needed for the Stripe checkout.
      *
      * @return void
+     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
      */
     public function enqueue_stripe_payment_scripts()
     {

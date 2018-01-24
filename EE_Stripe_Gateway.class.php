@@ -17,7 +17,7 @@ define('EE_STRIPE_URL', plugin_dir_url(__FILE__));
  * @package            Event Espresso
  * @subpackage         espresso-stripe-gateway
  * @author             Event Espresso
- * @version            $VID:$
+ * 
  */
 class EE_Stripe_Gateway extends EE_Addon
 {
