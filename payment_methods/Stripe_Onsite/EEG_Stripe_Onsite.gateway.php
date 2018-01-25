@@ -17,6 +17,7 @@
  */
 
 use EEA_Stripe\Stripe;
+use EEA_Stripe\Stripe_CardError;
 use EEA_Stripe\Stripe_Charge;
 
 class EEG_Stripe_Onsite extends EE_Onsite_Gateway
@@ -65,12 +66,15 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
             $payment->set_status($this->_pay_model->failed_status());
             return $payment;
         }
-        $key = apply_filters('FHEE__EEG_Stripe_Onsite__do_direct_payment__use_connected_account_token',
-            $this->_secret_key, $transaction->payment_method());
+        $key = apply_filters(
+            'FHEE__EEG_Stripe_Onsite__do_direct_payment__use_connected_account_token',
+            $this->_secret_key, $transaction->payment_method()
+        );
         // Set your secret key.
         Stripe::setApiKey($key);
         $stripe_data = array(
-            'amount' => str_replace(array(',', '.'), '', number_format($payment->amount(), 2)),
+            'amount' => $this->prepare_amount_for_stripe($payment->amount()),
+
             'currency' => $payment->currency_code(),
             'card' => $billing_info['ee_stripe_token'],
             'description' => $billing_info['ee_stripe_prod_description']
@@ -98,9 +102,68 @@ class EEG_Stripe_Onsite extends EE_Onsite_Gateway
         $payment->set_gateway_response($charge_array['status']);
         $payment->set_txn_id_chq_nmbr($charge_array['id']);
         $payment->set_details($charge_array);
-        $payment->set_amount(floatval($charge_array['amount'] / 100));
+        $payment->set_amount(floatval($this->prepare_amount_from_stripe($charge_array['amount'])));
         $payment->set_status($this->_pay_model->approved_status());
         return $payment;
+    }
+
+    /**
+     * Gets the number of decimal places Stripe expects a currency to have.
+     * See https://stripe.com/docs/currencies#charge-currencies for the list.
+     *
+     * @param string $currency Accepted currency.
+     * @return int
+     */
+    public function get_stripe_decimal_places($currency = '')
+    {
+        if (!$currency) {
+            $currency = EE_Registry::instance()->CFG->currency->code;
+        }
+        switch (strtoupper($currency)) {
+            // Zero decimal currencies.
+            case 'BIF' :
+            case 'CLP' :
+            case 'DJF' :
+            case 'GNF' :
+            case 'JPY' :
+            case 'KMF' :
+            case 'KRW' :
+            case 'MGA' :
+            case 'PYG' :
+            case 'RWF' :
+            case 'VND' :
+            case 'VUV' :
+            case 'XAF' :
+            case 'XOF' :
+            case 'XPF' :
+                return 0;
+            default :
+                return 2;
+        }
+    }
+
+
+    /**
+     * Converts an amount into the currency's subunits as expected by Stripe.
+     * (Some currencies have no subunits, so leaves them in the currency's main units).
+     * @param float $amount
+     * @return int in the currency's smallest unit (e.g., pennies)
+     */
+    public function prepare_amount_for_stripe($amount)
+    {
+        return $amount * pow(10, $this->get_stripe_decimal_places());
+    }
+
+
+    /**
+     * Converts an amount from Stripe (in the currency's subunits) to a
+     * float as used by EE
+     * @param $amount
+     * @return float
+     */
+    public function prepare_amount_from_stripe($amount)
+    {
+        return $amount / pow(10, $this->get_stripe_decimal_places());
     }
 }
 
