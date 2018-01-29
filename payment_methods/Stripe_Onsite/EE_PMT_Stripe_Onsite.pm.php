@@ -1,4 +1,3 @@
-
 <?php
 use EventEspresso\Stripe\domain\Domain;
 use EventEspresso\Stripe\forms\BillingForm;
