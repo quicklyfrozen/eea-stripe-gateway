@@ -206,50 +206,6 @@ class EE_PMT_Stripe_Onsite extends EE_PMT_Base
 
 
     /**
-     *  Load all the scripts needed for the Stripe checkout.
-     *
-     * @return void
-     * @deprecated in 1.1.1.p. Instead EventEspresso\Stripe\payment_methods\Stripe_Onsite\forms\BillingForm takes care of this
-     */
-    public function enqueue_stripe_payment_scripts()
-    {
-        wp_enqueue_style('espresso_stripe_payment_css', EE_STRIPE_URL . 'css' . DS . 'espresso_stripe.css');
-        wp_enqueue_script('stripe_payment_js', 'https://checkout.stripe.com/v2/checkout.js', array(), FALSE, TRUE);
-        wp_enqueue_script('espresso_stripe_payment_js', EE_STRIPE_URL . 'scripts' . DS . 'espresso_stripe_onsite.js', array('stripe_payment_js', 'single_page_checkout'), EE_STRIPE_VERSION, TRUE);
-
-        // Data needed in the JS.
-        $trans_args = array(
-            'data_key' => $this->_pm_instance->get_extra_meta(Domain::META_KEY_PUBLISHABLE_KEY, TRUE),
-            'data_name' => EE_Registry::instance()->CFG->organization->get_pretty('name'),
-            'data_image' => $this->_pm_instance->get_extra_meta('stripe_logo_url', TRUE, EE_Registry::instance()->CFG->organization->get_pretty('logo_url')),
-            //note its expected that we're using string values for 'true' and 'false' here. That's what the Stripe API is working with
-            'validate_zip' => $this->_pm_instance->get_extra_meta('validate_zip', true) ? 'true' : 'false',
-            'billing_address' => $this->_pm_instance->get_extra_meta('billing_address', true) ? 'true' : 'false',
-            'data_locale' => $this->_pm_instance->get_extra_meta('data_locale', true),
-            'data_currency' => EE_Registry::instance()->CFG->currency->code,
-            'data_panel_label' => sprintf(__('Pay %1$s Now', 'event_espresso'), '{{amount}}'),
-            'card_error_message' => __('Payment Error! Please refresh the page and try again or contact support.', 'event_espresso'),
-            'no_SPCO_error' => __('It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
-            'no_StripeCheckout_error' => __('It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
-            'payment_method_slug' => $this->_pm_instance->slug(),
-            'unit_to_subunit_conversion' => pow(10, $this->_gateway->get_stripe_decimal_places(EE_Registry::instance()->CFG->currency->code))
-        );
-        if ($this->_pm_instance->debug_mode()) {
-            $trans_args['data_cc_number'] = '4242424242424242';
-            $trans_args['data_exp_month'] = date('m');
-            $trans_args['data_exp_year'] = date('Y') + 4;
-            $trans_args['data_cvc'] = '248';
-        }
-
-        // Filter JS data.
-        $trans_args = apply_filters('FHEE__EE_PMT_Stripe_Onsite__enqueue_stripe_payment_scripts__js_data', $trans_args, $this->_pm_instance);
-
-        // Localize the script with our transaction data.
-        wp_localize_script('espresso_stripe_payment_js', 'stripe_transaction_args', $trans_args);
-    }
-
-
-    /**
      * Adds the help tab
      *
      * @see EE_PMT_Base::help_tabs_config()
