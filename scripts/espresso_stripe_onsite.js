@@ -354,7 +354,7 @@ jQuery(document).ready(function($) {
 				e.preventDefault();
 				//e.stopPropagation();
 				SPCO.hide_notices();
-				// Open Checkout with further options that were set in EE_PMT_Stripe_Onsite::enqueue_stripe_payment_scripts()
+				// Open a modal window with further Checkout options (set in BillingForm::enqueue_js()).
 				EE_STRIPE.handler.open({
 					name: stripe_transaction_args.data_name,
 					image: stripe_transaction_args.data_image,
