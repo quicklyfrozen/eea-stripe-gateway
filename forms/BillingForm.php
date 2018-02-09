@@ -191,6 +191,7 @@ class BillingForm extends EE_Billing_Info_Form
             'no_SPCO_error' => __('It appears the Single Page Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
             'no_StripeCheckout_error' => __('It appears the Stripe Checkout javascript was not loaded properly! Please refresh the page and try again or contact support.', 'event_espresso'),
             'payment_method_slug' => $this->payment_method()->slug(),
+            'unit_to_subunit_conversion' => pow(10, $this->payment_method()->type_obj()->get_gateway()->get_stripe_decimal_places(EE_Registry::instance()->CFG->currency->code))
         );
         if ($this->payment_method()->debug_mode()) {
             $trans_args['data_cc_number'] = '4242424242424242';
